@@ -1,15 +1,25 @@
 from tkinter import *
 # from tkinter.ttk import *
-from tkinter import messagebox, filedialog, simpledialog
+from tkinter import messagebox, filedialog, simpledialog, ttk
 import pickle
 from sys import argv
 import os
 import random
+from urllib import request
+import json
 import time
 import winsound
-from tkinter.ttk import Button
+# from tkinter.ttk import Button
+import threading
 # import ctypes
 
+
+
+styles = {
+    "normal": ["#FAFAF0","#50505A"],
+    "night": ["#50505A","#FAFAF0"],
+    "miku": ["#39C5BB","#50505A"]
+}
 
 up = []
 
@@ -46,6 +56,16 @@ with open("setting.pkl","rb") as f:
     etddd = pickle.load(f)
     tentime = etddd[0]
     useold = etddd[1]
+    isfirst = etddd[2]
+    allbg = etddd[3]
+    allfg = etddd[4]
+    styletype = etddd[5]
+# try:
+#     isfirst = etddd[2]
+# except Exception:
+#     isfirst = False
+#     with open("setting.pkl","wb") as f:
+#         pickle.dump([tentime,useold,isfirst],f)
 
 try:
     with open('student.pkl','rb') as f:
@@ -53,6 +73,29 @@ try:
 except Exception:
     with open('student.pkl','wb') as f:
         pickle.dump({},f)
+
+if isfirst:
+    try:
+        with open("_student.pkl","rb") as f:
+            kf = pickle.load(f)
+        with open("student.pkl","wb") as f:
+            pickle.dump(kf,f)
+        with open("_setting.pkl","rb") as f:
+            kf = pickle.load(f)
+        with open("setting.pkl","wb") as f:
+            pickle.dump(kf,f)
+    except Exception:
+        with open("setting.pkl","wb") as f:
+            pickle.dump([tentime,useold,0,allbg,allfg,styletype],f)
+with open("student.pkl","rb") as f:
+    kf = pickle.load(f)
+with open("_student.pkl","wb") as f:
+    pickle.dump(kf,f)
+with open("setting.pkl","rb") as f:
+    kf = pickle.load(f)
+with open("_setting.pkl","wb") as f:
+    pickle.dump(kf,f)
+
 name = [i for i in rm]
 namelist = rm
 for i in name:
@@ -251,7 +294,7 @@ def ipup(*args):
             messagebox.showinfo('随机学生',"配置成功！\n如需应用手动UP，请直接打开手动UP配置文件\n该配置文件只能用于本机！")
 
 def about(*args):
-    cpy = '''Random Student v1.3
+    cpy = '''Random Student v1.5
 
 Copyright 2023-2024 distjr_
 
@@ -436,18 +479,63 @@ def tenrandom(*args):
     else:
         pass
     winsound.Beep(2000,80)
-    but1 = Button(tenrandom,text="确定",command=lambda: tenrandom.destroy())
+    but1 = ttk.Button(tenrandom,text="确定",command=lambda: tenrandom.destroy())
     but1.pack()
+
+
+
+def getnew(*args):
+    try:
+        data = json.loads(request.urlopen("https://gitee.com/api/v5/repos/distjr/random-student/releases/latest").read())
+    except Exception:
+        messagebox.showerror("随机学生","网络错误！")
+        return
+    if data["name"] == "v1.5":
+        messagebox.showinfo("随机学生","没有发现新版本！")
+    else:
+        if messagebox.askyesno("随机学生","发现新版本：%s\n是否需要安装？" % data["name"]):
+            goingon = Toplevel(root)
+            goingon.title("下载进度")
+            goingon.geometry("300x70")
+            goingon.attributes("-topmost",1)
+            goingon.resizable(0,0)
+            global ttc
+            ttc = ttk.Progressbar(goingon, orient='horizontal', length=250, mode='determinate')
+            ttc.place(x=5,y=5)
+            global utc
+            utc = Label(goingon)
+            utc.place(x=85,y=40)
+            # Button(goingon,text="取消",command=canceldown)
+            def Schedule(a,b,c):
+                global ttc
+                global utc
+                per = 100.0 * a * b / c
+                if per > 100:
+                    per == 100
+                ttc['value'] = per
+                utc.config(text="%.3f/%.3f(MB)，进度：%.2f%%" % ((a*b)/(1024*1024),c/(1024*1024),per))
+                goingon.update()
+                # print("%.2f%%" % per)
+            request.urlretrieve(data["assets"][0]["browser_download_url"], "update.exe", Schedule)
+            goingon.destroy()
+            threading.Thread(target=os.system,args=("update.exe",)).start()
+            # messagebox.showinfo("随机学生","更新完成！")
 
 
 def setting(*args):
     global setup
+    global allbg
+    global allfg
+    global styletype
+    global tentime
+    global useold
+    global isfirst
     setup = Toplevel(root)
     setup.title("设置")
     setup.attributes("-topmost",1)
     setup.resizable(0,0)
     # setup.configure(bg="white")
-    setup.geometry("420x380")
+    setup.geometry("420x450")
     logic = [("旧版逻辑 by ruufly! & distjr_",1),("新版逻辑A by hz （尚未debug好，暂时不推荐使用）",2)]#,("新版逻辑B by dyt_dirt",3)]
     global vnlog
     vnlog = IntVar()
@@ -458,26 +546,33 @@ def setting(*args):
         global useold
         tentime = int(sp.get())
         with open("setting.pkl","wb") as f:
-            pickle.dump([tentime,vnlog.get()],f)
+            pickle.dump([tentime,vnlog.get(),isfirst,allbg,allfg,styletype],f)
         # print(type(tentime))
         useold = vnlog.get()
         setup.destroy()
     Label(setup,text="导入学生名单").place(x=5,y=20)
-    Button(setup,text="点击此处导入",command=ipsl).place(x=100,y=15)
+    ttk.Button(setup,text="点击此处导入",command=ipsl).place(x=100,y=15)
     Label(setup,text="新建手动UP").place(x=5,y=60)
-    Button(setup,text="点击此处新建手动UP",command=ipup).place(x=100,y=55)
-    Button(setup,text="点击此处检测新版本（还没写好检测程序，别点！）",command=lambda: messagebox.showerror("114514","1919810")).place(x=100,y=195)
+    ttk.Button(setup,text="点击此处新建手动UP",command=ipup).place(x=100,y=55)
+    ttk.Button(setup,text="点击此处检测新版本",command=getnew).place(x=100,y=195)
     Label(setup,text="版本更新").place(x=5,y=200)
     Label(setup,text="软件许可证").place(x=5,y=240)
-    Button(setup,text="点击此处查看许可证",command=about).place(x=100,y=235)
+    ttk.Button(setup,text="点击此处查看许可证",command=about).place(x=100,y=235)
     Label(setup,text="开放源代码").place(x=5,y=280)
     def github(*args):
         os.system("start https://github.com/zhuoyue2023/random-student")
+    def gitee(*args):
+        os.system("start https://gitee.com/distjr/random-student")
     global tpgithub
     tpgithub = PhotoImage(file="github.gif")
     lgithub = Label(setup,image=tpgithub,width=30,height=30)
     lgithub.place(x=100,y=275)
     lgithub.bind("<Button-1>",github)
+    global tpgitee
+    tpgitee = PhotoImage(file="gitee.gif")
+    lgitee = Label(setup,image=tpgitee,width=30,height=30)
+    lgitee.place(x=150,y=275)
+    lgitee.bind("<Button-1>",gitee)
     Label(setup,text="关于作者").place(x=5,y=320)
     def blog(*args):
         os.system("start https://distjr.gitee.io/")
@@ -508,9 +603,55 @@ def setting(*args):
     for i in logic:
         Radiobutton(setup,text=i[0],variable=vnlog,value=i[1]).place(x=100,y=dezy)
         dezy += 25
+    def dostyle(*args):
+        global allbg
+        global allfg
+        global styletype
+        global tentime
+        global useold
+        global isfirst
+        egoingon = Toplevel(root)
+        egoingon.title("个性化设置")
+        egoingon.geometry("300x120")
+        egoingon.attributes("-topmost",1)
+        egoingon.resizable(0,0)
+        def doneall(types):
+            global allbg
+            global allfg
+            global styletype
+            global tentime
+            global useold
+            global isfirst
+            styletype = types
+            allbg = styles[types][0]
+            allfg = styles[types][1]
+            with open("setting.pkl","wb") as f:
+                pickle.dump([tentime,useold,isfirst,allbg,allfg,styletype],f)
+            messagebox.showinfo("随机学生","设置成功！重启软件以完成设置！")
+            egoingon.destroy()
+        global sty1p
+        sty1p = PhotoImage(file="style\\normal.gif")
+        Label(egoingon,image=sty1p,width=80,height=50).place(x=15,y=10)
+        global sty2p
+        sty2p = PhotoImage(file="style\\night.gif")
+        Label(egoingon,image=sty2p,width=80,height=50).place(x=105,y=10)
+        global sty3p
+        sty3p = PhotoImage(file="style\\miku.gif")
+        Label(egoingon,image=sty3p,width=80,height=50).place(x=195,y=10)
+        ttk.Button(egoingon,text="Normal",command=lambda: doneall("normal")).place(x=15,y=70)
+        ttk.Button(egoingon,text="Night",command=lambda: doneall("night")).place(x=105,y=70)
+        ttk.Button(egoingon,text="Miku",command=lambda: doneall("miku")).place(x=195,y=70)
+    Label(setup,text="个性化").place(x=5,y=360)
+    global ovtpbblog
+    # ovtpbblog = PhotoImage(file="style\\%s.gif" % (styletype))
+    tlbvlog = Label(setup,text="当前主题：%s" % (styletype))# image=ovtpbblog,width=80,height=50,text="Now: %s" % (styletype))
+    tlbvlog.place(x=100,y=360)
+    # tlbvlog.bind("<Button-1>",bblog)
+    zqb = ttk.Button(setup,text="个性化设置",command=dostyle)
+    zqb.place(x=250,y=355)
     # Label(setup,text="开发人员工具").place(x=5,y=340)
     # Button(setup,text="点击此处打开开发人员工具",command=develop).place(x=100,y=335)
-    Button(setup,text="确定",command=gogogo).place(x=330,y=340)
+    ttk.Button(setup,text="确定",command=gogogo).place(x=310,y=410)
 
 button1 = Button(root,text="随机学生",command=gorandomup if len(argv) != 1 else gorandom)
 button1.pack()
@@ -521,5 +662,19 @@ button3.pack()
 Label(root,text="\n\n          Copyright 2024 distjr_.\n                All rights reserved.").pack()
 # button4 = Button(root,text="修改密码",command=changepwd)
 # button4.pack()
+
+
+# style = ttk.Style()
+# style.configure("randomstudent.style",background=allbg)
+
+root.configure(background=allbg)
+
+for i in root.winfo_children():
+    if type(i) == Button:
+        i.configure(relief="groove")
+    try:
+        i.configure(bg=allbg,fg=allfg)
+    except Exception:
+        pass
 
 root.mainloop()
