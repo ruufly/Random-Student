@@ -273,6 +273,7 @@ def randomName(*args):
         )[0]
     elif api["logics"][setting["Algorithm"]]["type"] == "foolsday":
         getattr(getNames, api["logics"][setting["Algorithm"]]["index"])()
+        return
     historyList.append(
         {"name": now, "type": studentList["students"][now], "cdraw": False}
     )
@@ -284,7 +285,45 @@ def randomName(*args):
     # print(now)
 
 
-def repeatedRandom(*args): ...
+def repeatedRandom(*args):
+    global tenRandom
+    times = setting["CDrawNumber"]
+    data = studentList["students"]
+    if api["logics"][setting["Algorithm"]]["type"] == "file":
+        with open(getPath("temp\\cdraw.tmp"), "wb") as f:
+            pickle.dump(times, f)
+        shouldAt = os.getcwd()
+        os.chdir(getPath(""))
+        os.system(getPath(api["logics"][setting["Algorithm"]]["file"]))
+        os.chdir(shouldAt)
+        with open(getPath("temp\\now.tmp"), "rb") as f:
+            now = pickle.load(f)
+        os.remove(getPath("temp\\cdraw.tmp"))
+    elif api["logics"][setting["Algorithm"]]["type"] == "function":
+        now = getattr(getNames, api["logics"][setting["Algorithm"]]["index"])(
+            studentList, historyList, True, False, times
+        )
+    elif api["logics"][setting["Algorithm"]]["type"] == "foolsday":
+        getattr(getNames, api["logics"][setting["Algorithm"]]["index"])()
+        return
+    tenRandom = Toplevel(root)
+    tenRandom.title(getLang("repeated"))
+    tenRandom.attributes("-topmost",1)
+    tenRandom.resizable(0,0)
+    tenRandom.geometry("200x%d" % (times*40+40))
+    for i in now:
+        rep_label = Label(tenRandom,font=('Microsoft YaHei UI',15),fg='black')
+        rep_label.pack()
+        root.update()
+        for j in range(6):
+            rep_label.config(text='%s' % (tuple(data.keys())[random.randint(0, len(data) - 1)]))
+            root.update()
+            time.sleep(0.01)
+        rep_label.config(text='%s' % (i))
+        root.update()
+    winsound.Beep(2000,50)
+    but1 = ttk.Button(tenRandom,text="确定",command=lambda: tenRandom.destroy())
+    but1.pack()
 
 
 def update(show=False):
@@ -455,6 +494,7 @@ def C_checkA(*args):
             updateRoot_.update()
     elif api["logics"][setting["Algorithm"]]["type"] == "foolsday":
         getattr(getNames, api["logics"][setting["Algorithm"]]["index"])()
+        return
 
     updateRoot_.destroy()
     all_data = [[], [], []]
