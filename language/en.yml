@@ -1,0 +1,13 @@
+rdsMessage: Random Student
+about: About
+rds: Random Student
+repeated: Multiple Draws
+setting: Setting
+
+oldVersionList: We have noticed that you have used the old version of the student list file format, which has been automatically converted to the new format for you!
+
+noNewVersion: No new version found
+newVersion: "Discovery version: %s\nDo you need to install it?"
+downloadProgress: 下载进度
+progress: "%.3f/%.3f(MB), Progress: %.2f%%"
+startInstall: The installation package has been downloaded and is now ready for installation

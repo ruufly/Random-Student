@@ -1,0 +1,42 @@
+rdsMessage: 随机学生
+about: 关于
+rds: 随机学生
+repeated: 连抽
+setting: 设置
+
+oldVersionList: 我们注意到您使用了旧版的学生名单文件格式，已为您自动转换为新版格式！
+
+noNewVersion: 没有发现新版本
+newVersion: "发现版本：%s\n是否需要安装？"
+downloadProgress: 下载进度
+progress: "%.3f/%.3f(MB)，进度：%.2f%%"
+startInstall: 安装包下载完成，现在开始安装
+
+manageStudents: 管理学生名单
+manageStudentsButton: 学生名单
+count: 点名次数统计
+countButton: 统计
+CDraw: 设置连抽次数
+logic: 随机逻辑
+update: 版本更新
+updateCheck: 检测新版本
+license: 软件许可证
+licenseButton: 许可证
+openSource: 开放源代码
+about: 关于作者
+individuation: 个性化设置
+individuationButton: 个性化
+languageSet: 语言设置
+okay: 确定
+
+counting: 统计
+timeC: 抽取统计
+timeCD: 统计所有学生被抽取的次数
+checkU: CNU检验
+checkUD: 检验Censored与Uped学生的抽取机会
+checkA: 高通量检验
+checkAD: 通过大量抽取试验以判断随机逻辑的优劣性
+errorC: 报错统计
+errorCD: 统计软件报错次数
+
+checkingS: 正在检验数据中
