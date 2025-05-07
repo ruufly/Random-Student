@@ -40,10 +40,17 @@ logics:
     show: false
   etr:
     description:
-      zh-CN: "高通量检验测试用逻辑 by distjr_"
-      en: "Logic to test the high throughput inspection"
+      zh-CN: "高通量检验测试用逻辑Ⅰ by distjr_"
+      en: "Logic A to test the high throughput inspection"
     type: "function"
     index: "logic::test::etr"
+    show: false
+  ctr:
+    description:
+      zh-CN: "高通量检验测试用逻辑Ⅱ by distjr_"
+      en: "Logic B to test the high throughput inspection"
+    type: "function"
+    index: "logic::test::tr_with_CNU"
     show: false
   lol:
     description:

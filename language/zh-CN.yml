@@ -41,3 +41,13 @@ errorC: 报错统计
 errorCD: 统计软件报错次数
 
 checkingS: 正在检验数据中
+
+individuationWin: 个性化
+Foreground: 一般前景
+NameForeground_N: Normal前景
+NameForeground_C: Censored前景
+NameForeground_U: Uped前景
+setIt: 设置
+bgSetIt: 设置背景颜色
+choseColor: 选择颜色
+indDone: 设置成功，重启软件以应用

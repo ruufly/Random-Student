@@ -215,7 +215,38 @@ def trueRandom(
     return returnBack
 
 
+def randomWithCNU(
+    student: dict,
+    history: dict,
+    isCdraw: bool = False,
+    isTest: bool = False,
+    CdrawTime: int = 0,
+) -> list:
+    times = 1
+    if isCdraw:
+        times = CdrawTime
+    data = student["students"]
+    names = tuple(data.keys())
+    returnBack = []
+    for i in range(times):
+        now_time = 0
+        now_get = names[random.randint(0, len(data) - 1)]
+        while now_get in returnBack:
+            now_get = names[random.randint(0, len(data) - 1)]
+            while data[now_get] == "C" and now_time < 100:
+                now_get = names[random.randint(0, len(data) - 1)]
+                while data[now_get] == "N":
+                    if random.randint(0, 3) == random.randint(0, 3):
+                        break
+                    now_get = names[random.randint(0, len(data) - 1)]
+                now_time += 1
+        returnBack.append(now_get)
+    return returnBack
+
+
 setattr(getNames, "logic::test::etr", trueRandom)
+
+setattr(getNames, "logic::test::tr_with_CNU", randomWithCNU)
 
 
 setattr(
@@ -426,8 +457,37 @@ def showData(all_data):
     plt.show()
 
 
-def C_timeC(*args): ...
-def C_checkU(*args): ...
+def getData():
+    data = {}
+    for i in studentList["students"]:
+        data[i] = 0
+    for i in historyList:
+        data[i["name"]] += 1
+    return data
+
+
+def C_timeC(*args):
+    data = getData()
+    x = list(data.keys())
+    y = [data[i] for i in x]
+    fig, ax = plt.subplots(figsize=(5, 5))
+    ax.bar(x=x, height=y)
+    plt.show()
+
+
+def C_checkU(*args):
+    data = getData()
+    all_data = [[], [], []]
+    for i in data:
+        if studentList["students"][i] == "C":
+            all_data[0].append(data[i])
+        if studentList["students"][i] == "N":
+            all_data[1].append(data[i])
+        if studentList["students"][i] == "U":
+            all_data[2].append(data[i])
+    showData(all_data)
+
+
 def C_checkA(*args):
     shouldAt = os.getcwd()
     config = configparser.ConfigParser()
@@ -571,7 +631,99 @@ def counting(*args):
     ttk.Label(countingWin, text=getLang("errorCD")).place(x=100, y=140)
 
 
-def individuation(*args): ...
+def individuation(*args):
+    shouldSetting = setting.copy()
+    indWin = Toplevel(root)
+    indWin.geometry("260x230")
+    indWin.title(getLang("individuationWin"))
+    indWin.attributes("-topmost", 1)
+    indWin.resizable(0, 0)
+
+    indWin.configure(background=setting["Background"])
+
+    lfg = Label(
+        indWin,
+        text=getLang("Foreground"),
+        font=("Microsoft YaHei UI", 15),
+        bg=setting["Background"],
+        fg=setting["Foreground"],
+    )
+    lfg.place(x=10, y=10)
+    lfs = {
+        "N": Label(
+            indWin,
+            text=getLang("NameForeground_N"),
+            font=("Microsoft YaHei UI", 15),
+            bg=setting["Background"],
+            fg=setting["NameForeground"]["N"],
+        ),
+        "C": Label(
+            indWin,
+            text=getLang("NameForeground_C"),
+            font=("Microsoft YaHei UI", 15),
+            bg=setting["Background"],
+            fg=setting["NameForeground"]["C"],
+        ),
+        "U": Label(
+            indWin,
+            text=getLang("NameForeground_U"),
+            font=("Microsoft YaHei UI", 15),
+            bg=setting["Background"],
+            fg=setting["NameForeground"]["U"],
+        ),
+    }
+    nowY = 50
+    for i in lfs:
+        lfs[i].place(x=10, y=nowY)
+        nowY += 40
+
+    def fg(*args):
+        setting["Foreground"] = colorchooser.askcolor(
+            color=setting["Foreground"], title=getLang("choseColor")
+        )[1]
+        lfg.config(fg=setting["Foreground"])
+
+    def fs(mode):
+        setting["NameForeground"][mode] = colorchooser.askcolor(
+            color=setting["NameForeground"][mode], title=getLang("choseColor")
+        )[1]
+        lfs[mode].config(fg=setting["NameForeground"][mode])
+
+    def bg(*args):
+        setting["Background"] = colorchooser.askcolor(
+            color=setting["Background"], title=getLang("choseColor")
+        )[1]
+        indWin.configure(background=setting["Background"])
+        lfg.config(bg=setting["Background"])
+        for i in lfs:
+            lfs[i].config(bg=setting["Background"])
+        indWin.update()
+
+    def colorOK(*args):
+        messagebox.showinfo(getLang("individuationWin"), getLang("indDone"))
+        with open(getPath("setting.json"), "w", encoding="utf-8") as f:
+            json.dump(setting, f)
+        indWin.destroy()
+
+    def indWin_del(*args):
+        global setting
+        setting = shouldSetting
+        indWin.destroy()
+
+    ttk.Button(indWin, text=getLang("setIt"), command=fg).place(x=160, y=10)
+    ttk.Button(indWin, text=getLang("setIt"), command=lambda: fs("N")).place(
+        x=160, y=50
+    )
+    ttk.Button(indWin, text=getLang("setIt"), command=lambda: fs("C")).place(
+        x=160, y=90
+    )
+    ttk.Button(indWin, text=getLang("setIt"), command=lambda: fs("U")).place(
+        x=160, y=130
+    )
+    ttk.Button(indWin, text=getLang("bgSetIt"), command=bg).place(x=10, y=170)
+
+    ttk.Button(indWin, text=getLang("okay"), command=colorOK).place(x=160, y=170)
+    indWin.protocol("WM_DELETE_WINDOW", indWin_del)
 
 
 def Setting(*args):
