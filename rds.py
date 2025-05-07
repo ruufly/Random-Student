@@ -152,6 +152,8 @@ root.title("Random Student")
 root.attributes("-topmost", 1)
 root.resizable(0, 0)
 
+root.configure(background=setting["Background"])
+
 
 rewrite = False
 studentList = {"version": version, "students": {}}
@@ -231,7 +233,11 @@ setattr(
 
 Frame(root, height=5).pack()
 studentNow = Label(
-    root, text=getLang("rdsMessage"), font=("Microsoft YaHei UI", 20), fg="gray"
+    root,
+    text=getLang("rdsMessage"),
+    font=("Microsoft YaHei UI", 20),
+    fg=setting["Foreground"],
+    bg=setting["Background"],
 )
 studentNow.pack()
 
@@ -259,7 +265,7 @@ limitations under the License.
 
 
 def randomName(*args):
-    winsound.Beep(2000,50)
+    winsound.Beep(2000, 50)
     if api["logics"][setting["Algorithm"]]["type"] == "file":
         shouldAt = os.getcwd()
         os.chdir(getPath(""))
@@ -280,7 +286,9 @@ def randomName(*args):
     with open(getPath("temp\\history.tmp"), "wb") as f:
         pickle.dump(historyList, f)
     studentNow.config(
-        text=now, fg=setting["NameForeground"][studentList["students"][now]]
+        text=now,
+        fg=setting["NameForeground"][studentList["students"][now]],
+        bg=setting["Background"],
     )
     # print(now)
 
@@ -308,31 +316,43 @@ def repeatedRandom(*args):
         return
     tenRandom = Toplevel(root)
     tenRandom.title(getLang("repeated"))
-    tenRandom.attributes("-topmost",1)
-    tenRandom.resizable(0,0)
-    tenRandom.geometry("200x%d" % (times*40+40))
+    tenRandom.attributes("-topmost", 1)
+    tenRandom.resizable(0, 0)
+    tenRandom.geometry("200x%d" % (times * 40 + 40))
+    tenRandom.configure(background=setting["Background"])
     for i in now:
-        rep_label = Label(tenRandom,font=('Microsoft YaHei UI',15),fg='black')
+        rep_label = Label(tenRandom, font=("Microsoft YaHei UI", 15), fg="black")
         rep_label.pack()
         root.update()
         for j in range(6):
-            rep_label.config(text='%s' % (tuple(data.keys())[random.randint(0, len(data) - 1)]))
+            rep_label.config(
+                text="%s" % (tuple(data.keys())[random.randint(0, len(data) - 1)]),
+                fg=setting["Foreground"],
+                bg=setting["Background"],
+            )
             root.update()
             time.sleep(0.01)
-        rep_label.config(text='%s' % (i))
+        rep_label.config(
+            text="%s" % (i),
+            fg=setting["NameForeground"][studentList["students"][i]],
+            bg=setting["Background"],
+        )
         root.update()
-    winsound.Beep(2000,50)
-    but1 = ttk.Button(tenRandom,text="确定",command=lambda: tenRandom.destroy())
+        historyList.append(
+            {"name": i, "type": studentList["students"][i], "cdraw": True}
+        )
+    winsound.Beep(2000, 50)
+    but1 = ttk.Button(tenRandom, text="确定", command=lambda: tenRandom.destroy())
     but1.pack()
 
 
 def update(show=False):
+    apis = {
+        "github": "https://api.github.com/repos/ruufly/Random-Student/releases/latest",
+        "gitee": "https://gitee.com/api/v5/repos/distjr/random-student/releases/latest",
+    }
     try:
-        data = json.loads(
-            request.urlopen(
-                "https://gitee.com/api/v5/repos/distjr/random-student/releases/latest"
-            ).read()
-        )
+        data = json.loads(request.urlopen(apis[setting["DownloadFrom"]]).read())
     except Exception:
         raiseError("Error", "Network Error")
         return
@@ -560,7 +580,7 @@ def Setting(*args):
     setup.title(getLang("setting"))
     setup.attributes("-topmost", 1)
     setup.resizable(0, 0)
-    setup.geometry("420x450")
+    setup.geometry("420x490")
     Label(setup, text=getLang("manageStudents")).place(x=5, y=20)
     ttk.Button(setup, text=getLang("manageStudentsButton")).place(x=100, y=15)
     Label(setup, text=getLang("count")).place(x=5, y=60)
@@ -625,6 +645,7 @@ def Setting(*args):
     ttk.Button(setup, text=getLang("individuationButton"), command=individuation).place(
         x=100, y=335
     )
+
     Label(setup, text=getLang("languageSet")).place(x=5, y=380)
     global langValue
     langValue = StringVar()
@@ -632,7 +653,16 @@ def Setting(*args):
     langBox.place(x=100, y=375)
     langBox["value"] = tuple(langSList)
     langBox.set(langDict[setting["Language"]]["show"])
-    ttk.Button(setup, text=getLang("okay")).place(x=310, y=410)
+
+    Label(setup, text=getLang("downloadFrom")).place(x=5, y=420)
+    global downValue
+    downValue = StringVar()
+    downBox = ttk.Combobox(setup, textvariable=downValue, state="readonly", width=30)
+    downBox.place(x=100, y=415)
+    downBox["value"] = ("github", "gitee")
+    downBox.set(setting["DownloadFrom"])
+
+    ttk.Button(setup, text=getLang("okay")).place(x=310, y=450)
 
 
 Frame(root, height=10).pack()

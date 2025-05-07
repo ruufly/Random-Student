@@ -1,6 +1,6 @@
 {
     "CDrawNumber": 10,
-    "Algorithm": "tr",
+    "Algorithm": "etr",
     "Background": "#F8FAED",
     "Foreground": "#525059",
     "NameForeground": {
