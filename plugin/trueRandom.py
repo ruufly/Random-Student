@@ -2,12 +2,12 @@ import random
 import pickle
 import os
 
-if os.path.exists(".\\temp\\test.tmp"):
-    with open(".\\temp\\student.tmp", "rb") as f:
-        data = pickle.load(f)["students"]
-else:
-    with open(".\\student.pkl", "rb") as f:
-        data = pickle.load(f)["students"]
+# if os.path.exists(".\\temp\\test.tmp"):
+with open(".\\temp\\student.tmp", "rb") as f:
+    data = pickle.load(f)["students"]
+# else:
+#     with open(".\\student.pkl", "rb") as f:
+#         data = pickle.load(f)["students"]
 
 names = tuple(data.keys())
 returnBack = []

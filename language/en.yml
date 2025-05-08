@@ -4,6 +4,8 @@ rds: Random Student
 repeated: Multiple Draws
 setting: Setting
 
+resetPwd: Unable to recognize password file, password has been reset to 123456
+
 oldVersionList: We have noticed that you have used the old version of the student list file format, which has been automatically converted to the new format for you!
 
 noNewVersion: No new version found
@@ -52,3 +54,24 @@ setIt: Change
 bgSetIt: Change the background
 choseColor: Chose a color
 indDone: Setting successfully, please restart the software to apply
+
+studentName: Student Name
+studentType: Student Type
+changeToN: Change To N
+changeToC: Change To C
+changeToU: Change To U
+changeToDelete: Delete
+changeToImport: Import
+changeName: Edit Name
+changeToNew: New
+allSelect: Select All
+allNotSelect: Deselect All
+invert: Invert
+manage_export: Export
+manage_okay: OK
+deleteStudent: Delete Students
+deleteStudent_text: Do you really want to delete these students?
+shouldSelectOne: "Only one student's name can be modified at a time"
+enterName: Enter the name
+haveExist: This name has already been used
+changeIt: Importing data from the file will overwrite the data with the same student name in the original list. Do you still want to import it?

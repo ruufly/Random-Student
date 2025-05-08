@@ -4,6 +4,8 @@ rds: 随机学生
 repeated: 连抽
 setting: 设置
 
+resetPwd: 无法识别密码文件，已将密码重置为 123456
+
 oldVersionList: 我们注意到您使用了旧版的学生名单文件格式，已为您自动转换为新版格式！
 
 noNewVersion: 没有发现新版本
@@ -52,3 +54,32 @@ setIt: 设置
 bgSetIt: 设置背景颜色
 choseColor: 选择颜色
 indDone: 设置成功，重启软件以应用
+
+studentName: 学生姓名
+studentType: 学生分类
+changeToN: 修改为Normal
+changeToC: 修改为Censored
+changeToU: 修改为Uped
+changeToDelete: 删除
+changeToImport: 导入
+changeName: 修改学生姓名
+changeToNew: 新建
+allSelect: 全选
+allNotSelect: 全不选
+invert: 反选
+manage_export: 导出
+manage_okay: 确定
+deleteStudent: 删除学生
+deleteStudent_text: 您真的要删除这些学生吗？
+shouldSelectOne: 一次只能修改一个学生的姓名
+enterName: 请输入学生姓名
+haveExist: 该姓名已被使用
+changeIt: 导入文件中的数据会覆盖原名单中具有相同姓名的学生的数据，是否仍要导入？
+
+nameIs: 学生姓名
+typeIs: 学生分类
+typesShouldType: 请选择一个分类
+changeToNewDone: 新建成功
+
+IsItDone: 是否确认本次修改
+ItIsDone: 修改成功

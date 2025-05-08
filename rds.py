@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import messagebox, filedialog, simpledialog, colorchooser, ttk
+from PIL import Image, ImageTk
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
@@ -18,6 +19,7 @@ import ctypes
 import threading
 
 
+global version
 version = "v2.0"
 
 
@@ -153,6 +155,19 @@ except KeyError:
     raiseError("Error", "Invalid API!")
     # exit(1)
 
+
+global pwd
+pwd = "123456"
+try:
+    with open(getPath("password.pkl"), "rb") as f:
+        pwd = pickle.load(f)
+except Exception:
+    messagebox.showinfo(getLang("rdsMessage"), getLang("resetPwd"))
+    with open(getPath("password.pkl"), "wb") as f:
+        pickle.dump("123456", f)
+    pwd = "123456"
+
+
 root = Tk(className="random student")
 root.geometry(
     "%dx%d"
@@ -175,7 +190,9 @@ if os.path.exists(getPath("student.pkl")):
         try:
             studentList = pickle.load(f)
             if not "version" in studentList:
-                messagebox.showinfo(getLang("rdsMessage"), getLang("oldVersionList"))
+                messagebox.showinfo(
+                    getLang("rdsMessage"), getLang("oldVersionList"), parent=root
+                )
                 _studentList = {"version": version, "students": {}}
                 for i in studentList:
                     name = i[:-1]
@@ -288,7 +305,7 @@ studentNow.pack()
 
 def about(*args):
     messagebox.showinfo(
-        getLang("about"),
+        getLang("license"),
         """Random Student v2.0
 
 Copyright 2023-2025 distjr_, ruufly!, hz, dyt_dirt, et al.
@@ -305,6 +322,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """,
+        parent=setup,
     )
 
 
@@ -313,6 +331,8 @@ def randomName(*args):
     if api["logics"][setting["Algorithm"]]["type"] == "file":
         shouldAt = os.getcwd()
         os.chdir(getPath(""))
+        with open("temp\\student.tmp", "wb") as f:
+            pickle.dump(studentList, f)
         os.system(getPath(api["logics"][setting["Algorithm"]]["file"]))
         os.chdir(shouldAt)
         with open(getPath("temp\\now.tmp"), "rb") as f:
@@ -346,6 +366,8 @@ def repeatedRandom(*args):
             pickle.dump(times, f)
         shouldAt = os.getcwd()
         os.chdir(getPath(""))
+        with open("temp\\student.tmp", "wb") as f:
+            pickle.dump(studentList, f)
         os.system(getPath(api["logics"][setting["Algorithm"]]["file"]))
         os.chdir(shouldAt)
         with open(getPath("temp\\now.tmp"), "rb") as f:
@@ -386,6 +408,8 @@ def repeatedRandom(*args):
             {"name": i, "type": studentList["students"][i], "cdraw": True}
         )
     winsound.Beep(2000, 50)
+    with open(getPath("temp\\history.tmp"), "wb") as f:
+        pickle.dump(historyList, f)
     but1 = ttk.Button(tenRandom, text="确定", command=lambda: tenRandom.destroy())
     but1.pack()
 
@@ -402,10 +426,12 @@ def update(show=False):
         return
     if data["tag_name"] == "v2.0":
         if show:
-            messagebox.showinfo(getLang("rdsMessage"), getLang("noNewVersion"))
+            messagebox.showinfo(
+                getLang("rdsMessage"), getLang("noNewVersion"), parent=setup
+            )
     else:
         if messagebox.askyesno(
-            getLang("rdsMessage"), getLang("newVersion") % data["name"]
+            getLang("rdsMessage"), getLang("newVersion") % data["name"], parent=setup
         ):
             updateRoot = Toplevel(root)
             updateRoot.title(getLang("downloadProgress"))
@@ -449,7 +475,9 @@ def update(show=False):
             )
             downloading = False
             updateRoot.destroy()
-            messagebox.showinfo(getLang("rdsMessage"), getLang("startInstall"))
+            messagebox.showinfo(
+                getLang("rdsMessage"), getLang("startInstall"), parent=setup
+            )
             threading.Thread(target=os.system, args=("update.exe",)).start()
 
 
@@ -728,7 +756,9 @@ def individuation(*args):
         indWin.update()
 
     def colorOK(*args):
-        messagebox.showinfo(getLang("individuationWin"), getLang("indDone"))
+        messagebox.showinfo(
+            getLang("individuationWin"), getLang("indDone"), parent=indWin
+        )
         with open(getPath("setting.json"), "w", encoding="utf-8") as f:
             json.dump(setting, f)
         indWin.destroy()
@@ -754,8 +784,258 @@ def individuation(*args):
     indWin.protocol("WM_DELETE_WINDOW", indWin_del)
 
 
+symbolUnchecked = ImageTk.PhotoImage(
+    Image.open(getPath("img\\MaterialSymbolsLightCheckBoxOutlineBlank.png")).resize(
+        (20, 20)
+    )
+)
+symbolChecked = ImageTk.PhotoImage(
+    Image.open(getPath("img\\MaterialSymbolsLightCheckBoxOutlineRounded.png")).resize(
+        (20, 20)
+    )
+)
+
+
+def manage(*args):
+    win = Toplevel(root)
+    win.title(getLang("manageStudents"))
+    win.attributes("-topmost", 1)
+    win.resizable(0, 0)
+    win.geometry("720x320")
+
+    rcFrame = Frame(win)  # , height=400)
+    columns = ["studentName", "studentType"]
+    global sb2
+    sb2 = Scrollbar(rcFrame)
+    sb2.pack(side=RIGHT, fill=Y)
+    global table
+    table = ttk.Treeview(rcFrame, columns=columns, yscrollcommand=sb2.set)
+    table.heading("#1", text=getLang("studentName"))
+    table.heading("#2", text=getLang("studentType"))
+    table.pack(fill=BOTH, side=LEFT, expand=True)
+    sb2.config(command=table.yview)
+
+    table.tag_configure("checked", image=symbolChecked)
+    table.tag_configure("unchecked", image=symbolUnchecked)
+
+    def on_checkbox_changed(*args):
+        item_id = table.focus()
+        checkbox_state = table.item(item_id, "tag")
+        if len(checkbox_state) == 0:
+            return
+        if checkbox_state[0] == "checked":
+            table.item(item_id, tags=("unchecked",))
+        else:
+            table.item(item_id, tags=("checked",))
+
+    table.bind("<<TreeviewSelect>>", on_checkbox_changed)
+
+    rcFrame.pack(fill=X)
+    global typeDict
+    typeDict = {"N": "Normal", "C": "Censored", "U": "Uped"}
+    global retypeDict
+    retypeDict = {"Normal": "N", "Censored": "C", "Uped": "U"}
+    global nowStudentList
+    nowStudentList = studentList.copy()
+
+    def init():
+        for i in nowStudentList["students"]:
+            table.item(
+                table.insert(
+                    "", END, values=(i, typeDict[nowStudentList["students"][i]])
+                ),
+                tags=("unchecked",),
+            )
+
+    init()
+
+    def getSelected():
+        times = 0
+        for i in table.get_children(None):
+            if table.item(i, "tag")[0] == "checked":
+                times += 1
+        return times
+
+    def allSelect(select: bool):
+        for i in table.get_children(None):
+            table.item(i, tags=("checked" if select else "unchecked",))
+
+    def invert(*args):
+        for i in table.get_children(None):
+            checkbox_state = table.item(i, "tag")
+            if checkbox_state[0] == "checked":
+                table.item(i, tags=("unchecked",))
+            else:
+                table.item(i, tags=("checked",))
+
+    def change(Type):
+        for i in table.get_children(None):
+            if table.item(i, "tag")[0] == "checked":
+                table.item(i, values=(table.item(i, "values")[0], typeDict[Type]))
+                nowStudentList["students"][table.item(i, "values")[0]] = Type
+
+    def delete(*args):
+        if getSelected() == 0:
+            return
+        if messagebox.askyesno(
+            getLang("deleteStudent"), getLang("deleteStudent_text"), parent=win
+        ):
+            for i in table.get_children(None):
+                if table.item(i, "tag")[0] == "checked":
+                    # table.item(i, values=("deleted", "deleted"))
+                    del nowStudentList["students"][table.item(i, "values")[0]]
+                    table.delete(i)
+
+    def changeName(*args):
+        if getSelected() == 0:
+            return
+        elif getSelected() != 1:
+            messagebox.showinfo(
+                getLang("changeName"), getLang("shouldSelectOne"), parent=win
+            )
+            return
+        else:
+            putin = simpledialog.askstring(
+                title=getLang("changeName"), prompt=getLang("enterName"), parent=win
+            )
+            if putin == None:
+                return
+            if putin in list(nowStudentList["students"].keys()):
+                messagebox.showinfo(
+                    getLang("changeName"), getLang("haveExist"), parent=win
+                )
+                return
+            for i in table.get_children(None):
+                if table.item(i, "tag")[0] == "checked":
+                    Type = nowStudentList["students"][table.item(i, "values")[0]]
+                    del nowStudentList["students"][table.item(i, "values")[0]]
+                    table.item(i, values=(putin, typeDict[Type]))
+                    nowStudentList["students"][putin] = Type
+            allSelect(False)
+
+    def Export(*args):
+        filename = filedialog.asksaveasfilename(
+            title=getLang("manage_export"),
+            filetypes=[
+                ("Random Student data file", "*.rsd"),
+                ("Random Student connect file", "*.rdc"),
+                ("All types", "*.*"),
+            ],
+            defaultextension=".rsd",
+            parent=win,
+        )
+        if not filename:
+            return
+        exportData = {}
+        for i in table.get_children(None):
+            if table.item(i, "tag")[0] == "checked":
+                exportData[table.item(i, "values")[0]] = retypeDict[
+                    table.item(i, "values")[1]
+                ]
+        if os.path.splitext(filename)[1] == ".rdc":
+            exportData = {"version": version, "students": exportData}
+        with open(filename, "wb") as f:
+            pickle.dump(exportData, f)
+
+    def Import(*args):
+        filename = filedialog.askopenfilename(
+            title=getLang("changeToImport"),
+            filetypes=[("Random Student data file", "*.rsd"), ("All types", "*.*")],
+            parent=win,
+        )
+        if not filename:
+            return
+        with open(filename, "rb") as f:
+            filedata = pickle.load(f)
+        if messagebox.askyesno(
+            getLang("changeToImport"), getLang("changeIt"), parent=win
+        ):
+            nowStudentList["students"].update(filedata)
+            for i in table.get_children(None):
+                table.delete(i)
+            init()
+
+    def New(*args):
+        newWin = Toplevel(win)
+        newWin.title(getLang("changeToNew"))
+        newWin.attributes("-topmost", 1)
+        newWin.resizable(0, 0)
+        newWin.geometry("400x130")
+        Label(newWin, text=getLang("nameIs")).place(x=10, y=10)
+        Label(newWin, text=getLang("typeIs")).place(x=10, y=50)
+        global enName
+        enName = ttk.Entry(newWin)
+        enName.place(x=100, y=5)
+        global typesValue
+        typesValue = StringVar()
+        typesBox = ttk.Combobox(
+            newWin, textvariable=typesValue, state="readonly", width=30
+        )
+        typesBox.place(x=100, y=45)
+        typesTuple = ("Normal", "Censored", "Uped")
+        typesBox["value"] = typesTuple
+
+        def newOK(*args):
+            if enName.get() in nowStudentList["students"]:
+                messagebox.showinfo(
+                    getLang("changeToNew"), getLang("haveExist"), parent=newWin
+                )
+                return
+            if not typesBox.get() in typesTuple:
+                messagebox.showinfo(
+                    getLang("changeToNew"), getLang("typesShouldType"), parent=newWin
+                )
+                return
+            newName = enName.get()
+            newType = retypeDict[typesBox.get()]
+            table.item(
+                table.insert(
+                    "", END, values=(newName, typeDict[newType])
+                ),
+                tags=("unchecked",),
+            )
+            nowStudentList["students"][newName] = newType
+            messagebox.showinfo(getLang("changeToNew"), getLang("changeToNewDone"), parent=newWin)
+            newWin.destroy()
+
+        ttk.Button(newWin, text=getLang("manage_okay"), command=newOK).place(
+            x=300, y=90
+        )
+
+    def nowOK(*args):
+        global studentList
+        if messagebox.askyesno(getLang("manageStudents"), getLang("IsItDone"), parent=win):
+            studentList = nowStudentList
+            messagebox.showinfo(getLang("manageStudents"), getLang("ItIsDone"), parent=win)
+            win.destroy()
+
+    ttk.Button(win, text=getLang("changeToN"), command=lambda: change("N")).place(
+        x=10, y=250
+    )
+    ttk.Button(win, text=getLang("changeToC"), command=lambda: change("C")).place(
+        x=130, y=250
+    )
+    ttk.Button(win, text=getLang("changeToU"), command=lambda: change("U")).place(
+        x=250, y=250
+    )
+    ttk.Button(win, text=getLang("changeToDelete"), command=delete).place(x=370, y=250)
+    ttk.Button(win, text=getLang("changeName"), command=changeName).place(x=490, y=250)
+    ttk.Button(win, text=getLang("changeToNew"), command=New).place(x=610, y=250)
+    ttk.Button(win, text=getLang("allSelect"), command=lambda: allSelect(True)).place(
+        x=10, y=280
+    )
+    ttk.Button(
+        win, text=getLang("allNotSelect"), command=lambda: allSelect(False)
+    ).place(x=130, y=280)
+    ttk.Button(win, text=getLang("invert"), command=invert).place(x=250, y=280)
+    ttk.Button(win, text=getLang("changeToImport"), command=Import).place(x=370, y=280)
+    ttk.Button(win, text=getLang("manage_export"), command=Export).place(x=490, y=280)
+    ttk.Button(win, text=getLang("manage_okay"), command=nowOK).place(x=610, y=280)
+
+
 def Setting(*args):
     global setting
+    global setup
     setup = Toplevel(root)
     setup.title(getLang("setting"))
     setup.attributes("-topmost", 1)
@@ -763,7 +1043,9 @@ def Setting(*args):
     setup.geometry("420x490")
     shouldX = langDict[setting["Language"]]["shouldX"]
     Label(setup, text=getLang("manageStudents")).place(x=5, y=20)
-    ttk.Button(setup, text=getLang("manageStudentsButton")).place(x=shouldX, y=15)
+    ttk.Button(setup, text=getLang("manageStudentsButton"), command=manage).place(
+        x=shouldX, y=15
+    )
     Label(setup, text=getLang("count")).place(x=5, y=60)
     ttk.Button(setup, text=getLang("countButton"), command=counting).place(
         x=shouldX, y=55
@@ -799,12 +1081,12 @@ def Setting(*args):
         os.system("start https://gitee.com/distjr/random-student")
 
     global tp_github
-    tp_github = PhotoImage(file=getPath("github.gif"))
+    tp_github = PhotoImage(file=getPath("img\\github.gif"))
     l_github = Label(setup, image=tp_github, width=30, height=30)
     l_github.place(x=shouldX, y=255)
     l_github.bind("<Button-1>", github)
     global tp_gitee
-    tp_gitee = PhotoImage(file=getPath("gitee.gif"))
+    tp_gitee = PhotoImage(file=getPath("img\\gitee.gif"))
     l_gitee = Label(setup, image=tp_gitee, width=30, height=30)
     l_gitee.place(x=shouldX + 50, y=255)
     l_gitee.bind("<Button-1>", gitee)
@@ -814,7 +1096,7 @@ def Setting(*args):
         os.system("start https://ruufly.github.io/")
 
     global tp_blog
-    tp_blog = PhotoImage(file=getPath("favicon.gif"))
+    tp_blog = PhotoImage(file=getPath("img\\favicon.gif"))
     l_blog = Label(setup, image=tp_blog, width=30, height=30)
     l_blog.place(x=shouldX + 50, y=295)
     l_blog.bind("<Button-1>", blog)
@@ -823,7 +1105,7 @@ def Setting(*args):
         os.system("start https://space.bilibili.com/1159124697")
 
     global tp_bilibili
-    tp_bilibili = PhotoImage(file=getPath("bilibili.gif"))
+    tp_bilibili = PhotoImage(file=getPath("img\\bilibili.gif"))
     l_bilibili = Label(setup, image=tp_bilibili, width=30, height=30)
     l_bilibili.place(x=shouldX, y=295)
     l_bilibili.bind("<Button-1>", bilibili)
@@ -859,7 +1141,7 @@ def Setting(*args):
         setting["Language"] = newLang
         with open(getPath("setting.json"), "w", encoding="utf-8") as f:
             json.dump(setting, f)
-        messagebox.showinfo(getLang("setting"), getLang("setDone"))
+        messagebox.showinfo(getLang("setting"), getLang("setDone"), parent=setup)
         setup.destroy()
 
     ttk.Button(setup, text=getLang("okay"), command=okay).place(x=310, y=450)
