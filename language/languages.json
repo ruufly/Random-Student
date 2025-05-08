@@ -1,8 +1,14 @@
 {
     "en": {
-        "show": "English"
+        "show": "English",
+        "shouldX": 150,
+        "rootSize": 230,
+        "countingX": 600
     },
     "zh-CN": {
-        "show": "中文（简体）"
+        "show": "中文（简体）",
+        "shouldX": 100,
+        "rootSize": 200,
+        "countingX": 420
     }
 }

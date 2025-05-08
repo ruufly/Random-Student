@@ -31,7 +31,10 @@ def raiseError(title, information):
     if not os.path.exists(getPath("error.log")):
         mode = "w"
     with open(getPath("error.log"), mode) as f:
-        f.write(information + "\n")
+        f.write(
+            "%s: %s\n"
+            % (time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), information)
+        )
 
 
 try:
@@ -115,13 +118,16 @@ def getLang(text):
 
 global langDict
 global langSList
+global langSDict
 with open(
     getPath(os.path.join("language", "languages.json")), "r", encoding="utf-8"
 ) as f:
     langDict = json.load(f)
 langSList = []
+langSDict = {}
 for i in langDict:
     langSList.append(langDict[i]["show"])
+    langSDict[langDict[i]["show"]] = i
 
 
 if not os.path.exists(getPath("api.yml")):
@@ -137,16 +143,23 @@ try:
     logics = api["logics"]
     global logicDList
     logicDList = []
+    global logicDDict
+    logicDDict = {}
     for i in logics:
         if logics[i]["show"]:
             logicDList.append(logics[i]["description"][setting["Language"]])
+        logicDDict[logics[i]["description"][setting["Language"]]] = i
 except KeyError:
     raiseError("Error", "Invalid API!")
-    exit(1)
+    # exit(1)
 
 root = Tk(className="random student")
 root.geometry(
-    "%dx%d" % ((200, 200) if setting["Language"] in ["zh-CN"] else (230, 230))
+    "%dx%d"
+    % (
+        langDict[setting["Language"]]["rootSize"],
+        langDict[setting["Language"]]["rootSize"],
+    )
 )
 root.title("Random Student")
 root.attributes("-topmost", 1)
@@ -530,6 +543,18 @@ def C_checkA(*args):
     history_check = []
     countingS = {}
 
+    def del_update(*args):
+        global downloading
+        if downloading:
+            pass
+        else:
+            updateRoot_.destroy()
+
+    updateRoot_.protocol("WM_DELETE_WINDOW", del_update)
+
+    global downloading
+    downloading = True
+
     if api["logics"][setting["Algorithm"]]["type"] == "file":
         if os.path.exists(getPath("test")):
             shutil.rmtree(getPath("test"))
@@ -576,6 +601,8 @@ def C_checkA(*args):
         getattr(getNames, api["logics"][setting["Algorithm"]]["index"])()
         return
 
+    downloading = False
+
     updateRoot_.destroy()
     all_data = [[], [], []]
     for i in countingS:
@@ -620,15 +647,16 @@ def counting(*args):
     countingWin.title(getLang("counting"))
     countingWin.attributes("-topmost", 1)
     countingWin.resizable(0, 0)
-    countingWin.geometry("420x220")
+    countingWin.geometry("%dx220" % (langDict[setting["Language"]]["countingX"]))
+    shouldX = langDict[setting["Language"]]["shouldX"]
     ttk.Button(countingWin, text=getLang("timeC"), command=C_timeC).place(x=5, y=15)
     ttk.Button(countingWin, text=getLang("checkU"), command=C_checkU).place(x=5, y=55)
     ttk.Button(countingWin, text=getLang("checkA"), command=C_checkA).place(x=5, y=95)
     ttk.Button(countingWin, text=getLang("errorC"), command=C_errorC).place(x=5, y=135)
-    ttk.Label(countingWin, text=getLang("timeCD")).place(x=100, y=20)
-    ttk.Label(countingWin, text=getLang("checkUD")).place(x=100, y=60)
-    ttk.Label(countingWin, text=getLang("checkAD")).place(x=100, y=100)
-    ttk.Label(countingWin, text=getLang("errorCD")).place(x=100, y=140)
+    ttk.Label(countingWin, text=getLang("timeCD")).place(x=shouldX, y=20)
+    ttk.Label(countingWin, text=getLang("checkUD")).place(x=shouldX, y=60)
+    ttk.Label(countingWin, text=getLang("checkAD")).place(x=shouldX, y=100)
+    ttk.Label(countingWin, text=getLang("errorCD")).place(x=shouldX, y=140)
 
 
 def individuation(*args):
@@ -733,29 +761,35 @@ def Setting(*args):
     setup.attributes("-topmost", 1)
     setup.resizable(0, 0)
     setup.geometry("420x490")
+    shouldX = langDict[setting["Language"]]["shouldX"]
     Label(setup, text=getLang("manageStudents")).place(x=5, y=20)
-    ttk.Button(setup, text=getLang("manageStudentsButton")).place(x=100, y=15)
+    ttk.Button(setup, text=getLang("manageStudentsButton")).place(x=shouldX, y=15)
     Label(setup, text=getLang("count")).place(x=5, y=60)
-    ttk.Button(setup, text=getLang("countButton"), command=counting).place(x=100, y=55)
+    ttk.Button(setup, text=getLang("countButton"), command=counting).place(
+        x=shouldX, y=55
+    )
     Label(setup, text=getLang("CDraw")).place(x=5, y=100)
     sp = ttk.Spinbox(setup, from_=1, to=15)
     sp.delete(0, "end")
     sp.insert("end", str(setting["CDrawNumber"]))
     sp.config(state="readonly")
-    sp.place(x=100, y=95)
+    sp.place(x=shouldX, y=95)
     Label(setup, text=getLang("logic")).place(x=5, y=140)
+
     global logicValue
     logicValue = StringVar()
     logicBox = ttk.Combobox(setup, textvariable=logicValue, state="readonly", width=30)
-    logicBox.place(x=100, y=135)
+    logicBox.place(x=shouldX, y=135)
     logicBox["value"] = tuple(logicDList)
     logicBox.set(logics[setting["Algorithm"]]["description"][setting["Language"]])
     Label(setup, text=getLang("update")).place(x=5, y=180)
     ttk.Button(setup, text=getLang("updateCheck"), command=lambda: update(True)).place(
-        x=100, y=175
+        x=shouldX, y=175
     )
     Label(setup, text=getLang("license")).place(x=5, y=220)
-    ttk.Button(setup, text=getLang("licenseButton"), command=about).place(x=100, y=215)
+    ttk.Button(setup, text=getLang("licenseButton"), command=about).place(
+        x=shouldX, y=215
+    )
     Label(setup, text=getLang("openSource")).place(x=5, y=260)
 
     def github(*args):
@@ -767,12 +801,12 @@ def Setting(*args):
     global tp_github
     tp_github = PhotoImage(file=getPath("github.gif"))
     l_github = Label(setup, image=tp_github, width=30, height=30)
-    l_github.place(x=100, y=255)
+    l_github.place(x=shouldX, y=255)
     l_github.bind("<Button-1>", github)
     global tp_gitee
     tp_gitee = PhotoImage(file=getPath("gitee.gif"))
     l_gitee = Label(setup, image=tp_gitee, width=30, height=30)
-    l_gitee.place(x=150, y=255)
+    l_gitee.place(x=shouldX + 50, y=255)
     l_gitee.bind("<Button-1>", gitee)
     Label(setup, text=getLang("about")).place(x=5, y=300)
 
@@ -782,7 +816,7 @@ def Setting(*args):
     global tp_blog
     tp_blog = PhotoImage(file=getPath("favicon.gif"))
     l_blog = Label(setup, image=tp_blog, width=30, height=30)
-    l_blog.place(x=150, y=295)
+    l_blog.place(x=shouldX + 50, y=295)
     l_blog.bind("<Button-1>", blog)
 
     def bilibili(*args):
@@ -791,18 +825,18 @@ def Setting(*args):
     global tp_bilibili
     tp_bilibili = PhotoImage(file=getPath("bilibili.gif"))
     l_bilibili = Label(setup, image=tp_bilibili, width=30, height=30)
-    l_bilibili.place(x=100, y=295)
+    l_bilibili.place(x=shouldX, y=295)
     l_bilibili.bind("<Button-1>", bilibili)
     Label(setup, text=getLang("individuation")).place(x=5, y=340)
     ttk.Button(setup, text=getLang("individuationButton"), command=individuation).place(
-        x=100, y=335
+        x=shouldX, y=335
     )
 
     Label(setup, text=getLang("languageSet")).place(x=5, y=380)
     global langValue
     langValue = StringVar()
     langBox = ttk.Combobox(setup, textvariable=langValue, state="readonly", width=30)
-    langBox.place(x=100, y=375)
+    langBox.place(x=shouldX, y=375)
     langBox["value"] = tuple(langSList)
     langBox.set(langDict[setting["Language"]]["show"])
 
@@ -810,11 +844,25 @@ def Setting(*args):
     global downValue
     downValue = StringVar()
     downBox = ttk.Combobox(setup, textvariable=downValue, state="readonly", width=30)
-    downBox.place(x=100, y=415)
+    downBox.place(x=shouldX, y=415)
     downBox["value"] = ("github", "gitee")
     downBox.set(setting["DownloadFrom"])
 
-    ttk.Button(setup, text=getLang("okay")).place(x=310, y=450)
+    def okay(*args):
+        repeatTime = int(sp.get())
+        newLogic = logicDDict[logicBox.get()]
+        newLang = langSDict[langBox.get()]
+        newDown = downBox.get()
+        setting["CDrawNumber"] = repeatTime
+        setting["Algorithm"] = newLogic
+        setting["DownloadFrom"] = newDown
+        setting["Language"] = newLang
+        with open(getPath("setting.json"), "w", encoding="utf-8") as f:
+            json.dump(setting, f)
+        messagebox.showinfo(getLang("setting"), getLang("setDone"))
+        setup.destroy()
+
+    ttk.Button(setup, text=getLang("okay"), command=okay).place(x=310, y=450)
 
 
 Frame(root, height=10).pack()

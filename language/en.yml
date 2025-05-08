@@ -8,6 +8,47 @@ oldVersionList: We have noticed that you have used the old version of the studen
 
 noNewVersion: No new version found
 newVersion: "Discovery version: %s\nDo you need to install it?"
-downloadProgress: 下载进度
+downloadProgress: Download Progress
 progress: "%.3f/%.3f(MB), Progress: %.2f%%"
 startInstall: The installation package has been downloaded and is now ready for installation
+
+manageStudents: Manage the roster
+manageStudentsButton: Roster
+count: Statistics
+countButton: Statistics
+CDraw: Set the multiple draws
+logic: Algorithm
+update: Version update
+updateCheck: Check the update
+license: License
+licenseButton: License
+openSource: Open source project
+about: About
+individuation: Individuation
+individuationButton: Individuation
+languageSet: Language setting
+downloadFrom: Update source
+okay: OK
+setDone: Setting successfully, please restart the software for language settings to apply
+
+counting: Statistics
+timeC: Extract statistics
+timeCD: Count the number of times all students have been selected
+checkU: CNU check
+checkUD: Test the extraction opportunities for Censored and Uped students
+checkA: High-throughput test
+checkAD: "Determine the superiority or inferiority of the algorithm\nthrough extensive sampling experiments"
+errorC: Error statistics
+errorCD: Count the number of software error occurrences
+
+checkingS: Checking data in progress
+
+individuationWin: Individuation
+Foreground: Foreground
+NameForeground_N: Foreground(N)
+NameForeground_C: Foreground(C)
+NameForeground_U: Foreground(U)
+setIt: Change
+bgSetIt: Change the background
+choseColor: Chose a color
+indDone: Setting successfully, please restart the software to apply
