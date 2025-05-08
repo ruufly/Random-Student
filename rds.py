@@ -19,7 +19,7 @@ import threading
 
 
 global version
-version = "v2.0"
+version = "v2.0-a1"
 
 
 def getPath(path):
@@ -803,7 +803,7 @@ symbolChecked = ImageTk.PhotoImage(
 )
 
 
-def manage(*args):
+def _manage():
     win = Toplevel(root)
     win.title(getLang("manageStudents"))
     win.attributes("-topmost", 1)
@@ -996,13 +996,13 @@ def manage(*args):
             newName = enName.get()
             newType = retypeDict[typesBox.get()]
             table.item(
-                table.insert(
-                    "", END, values=(newName, typeDict[newType])
-                ),
+                table.insert("", END, values=(newName, typeDict[newType])),
                 tags=("unchecked",),
             )
             nowStudentList["students"][newName] = newType
-            messagebox.showinfo(getLang("changeToNew"), getLang("changeToNewDone"), parent=newWin)
+            messagebox.showinfo(
+                getLang("changeToNew"), getLang("changeToNewDone"), parent=newWin
+            )
             newWin.destroy()
 
         ttk.Button(newWin, text=getLang("manage_okay"), command=newOK).place(
@@ -1011,9 +1011,13 @@ def manage(*args):
 
     def nowOK(*args):
         global studentList
-        if messagebox.askyesno(getLang("manageStudents"), getLang("IsItDone"), parent=win):
+        if messagebox.askyesno(
+            getLang("manageStudents"), getLang("IsItDone"), parent=win
+        ):
             studentList = nowStudentList
-            messagebox.showinfo(getLang("manageStudents"), getLang("ItIsDone"), parent=win)
+            messagebox.showinfo(
+                getLang("manageStudents"), getLang("ItIsDone"), parent=win
+            )
             win.destroy()
 
     ttk.Button(win, text=getLang("changeToN"), command=lambda: change("N")).place(
@@ -1040,6 +1044,44 @@ def manage(*args):
     ttk.Button(win, text=getLang("manage_okay"), command=nowOK).place(x=610, y=280)
 
 
+def manage(*args):
+    global pwd
+    inputPwd = simpledialog.askstring(
+        title=getLang("manageStudents"), prompt=getLang("enterPwd")
+    )
+    if inputPwd == None:
+        return
+    elif inputPwd == pwd:
+        _manage()
+    else:
+        messagebox.showinfo(
+            getLang("manageStudents"), getLang("pwdNotSuc"), parent=setup
+        )
+
+
+def changePwd(*args):
+    global pwd
+    inputPwd = simpledialog.askstring(
+        title=getLang("passwordChange"), prompt=getLang("enterOldPwd")
+    )
+    if inputPwd == pwd:
+        newPwd = simpledialog.askstring(
+            title=getLang("passwordChange"), prompt=getLang("enterNewPwd")
+        )
+        if newPwd == None:
+            return
+        pwd = newPwd
+        with open(getPath("password.pkl"), "wb") as f:
+            pickle.dump(pwd, f)
+        messagebox.showinfo(
+            getLang("passwordChange"), getLang("passwordChangeSuc"), parent=setup
+        )
+    elif inputPwd != None:
+        messagebox.showinfo(
+            getLang("passwordChange"), getLang("pwdNotSuc"), parent=setup
+        )
+
+
 def Setting(*args):
     global setting
     global setup
@@ -1047,7 +1089,7 @@ def Setting(*args):
     setup.title(getLang("setting"))
     setup.attributes("-topmost", 1)
     setup.resizable(0, 0)
-    setup.geometry("420x490")
+    setup.geometry("420x540")
     shouldX = langDict[setting["Language"]]["shouldX"]
     Label(setup, text=getLang("manageStudents")).place(x=5, y=20)
     ttk.Button(setup, text=getLang("manageStudentsButton"), command=manage).place(
@@ -1082,7 +1124,7 @@ def Setting(*args):
     Label(setup, text=getLang("openSource")).place(x=5, y=260)
 
     def github(*args):
-        os.system("start https://github.com/zhuoyue2023/random-student")
+        os.system("start https://github.com/ruufly/Random-Student")
 
     def gitee(*args):
         os.system("start https://gitee.com/distjr/random-student")
@@ -1137,6 +1179,11 @@ def Setting(*args):
     downBox["value"] = ("github", "gitee")
     downBox.set(setting["DownloadFrom"])
 
+    Label(setup, text=getLang("passwordChange")).place(x=5, y=460)
+    ttk.Button(setup, text=getLang("passwordChangeButton"), command=changePwd).place(
+        x=shouldX, y=455
+    )
+
     def okay(*args):
         repeatTime = int(sp.get())
         newLogic = logicDDict[logicBox.get()]
@@ -1151,7 +1198,7 @@ def Setting(*args):
         messagebox.showinfo(getLang("setting"), getLang("setDone"), parent=setup)
         setup.destroy()
 
-    ttk.Button(setup, text=getLang("okay"), command=okay).place(x=310, y=450)
+    ttk.Button(setup, text=getLang("okay"), command=okay).place(x=310, y=490)
 
 
 Frame(root, height=10).pack()

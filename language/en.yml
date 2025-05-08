@@ -30,6 +30,8 @@ individuation: Individuation
 individuationButton: Individuation
 languageSet: Language setting
 downloadFrom: Update source
+passwordChange: Change the password
+passwordChangeButton: Change
 okay: OK
 setDone: Setting successfully, please restart the software for language settings to apply
 
@@ -75,3 +77,19 @@ shouldSelectOne: "Only one student's name can be modified at a time"
 enterName: Enter the name
 haveExist: This name has already been used
 changeIt: Importing data from the file will overwrite the data with the same student name in the original list. Do you still want to import it?
+
+enterPwd: Please enter the password
+
+nameIs: Student Name
+typeIs: Student Type
+typesShouldType: Please chose a type
+changeToNewDone: Created successfully
+
+IsItDone: Are you sure about this change
+ItIsDone: Changed successfully
+
+enterOldPwd: Enter the old password
+enterNewPwd: Enter the new password
+passwordChangeSuc: Changed successfully
+
+pwdNotSuc: Password error

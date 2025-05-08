@@ -30,6 +30,8 @@ individuation: 个性化设置
 individuationButton: 个性化
 languageSet: 语言设置
 downloadFrom: 更新包下载源
+passwordChange: 修改密码
+passwordChangeButton: 修改
 okay: 确定
 setDone: 设置成功，语言设置请重启软件以应用
 
@@ -76,6 +78,8 @@ enterName: 请输入学生姓名
 haveExist: 该姓名已被使用
 changeIt: 导入文件中的数据会覆盖原名单中具有相同姓名的学生的数据，是否仍要导入？
 
+enterPwd: 请输入密码
+
 nameIs: 学生姓名
 typeIs: 学生分类
 typesShouldType: 请选择一个分类
@@ -83,3 +87,9 @@ changeToNewDone: 新建成功
 
 IsItDone: 是否确认本次修改
 ItIsDone: 修改成功
+
+enterOldPwd: 输入旧密码
+enterNewPwd: 输入新密码
+passwordChangeSuc: 修改成功
+
+pwdNotSuc: 密码错误
