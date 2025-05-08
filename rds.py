@@ -431,7 +431,7 @@ def update(show=False):
     except Exception:
         raiseError("Error", "Network Error")
         return
-    if data["tag_name"] == "v2.0":
+    if data["tag_name"] == version:
         if show:
             messagebox.showinfo(
                 getLang("rdsMessage"), getLang("noNewVersion"), parent=setup
