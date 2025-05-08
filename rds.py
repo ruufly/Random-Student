@@ -15,7 +15,6 @@ import time
 import winsound
 import shutil
 import configparser
-import ctypes
 import threading
 
 
@@ -210,6 +209,14 @@ else:
 if rewrite:
     with open(getPath("student.pkl"), "wb") as f:
         pickle.dump(studentList, f)
+
+if len(argv) > 1:
+    try:
+        with open(argv[1], "rb") as f:
+            studentList = pickle.load(f)
+    except Exception:
+        raiseError("Error", "Invalid argv!")
+
 
 historyList = []
 
