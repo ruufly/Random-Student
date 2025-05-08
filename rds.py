@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox, filedialog, simpledialog, colorchooser, ttk
 from PIL import Image, ImageTk
+from datetime import datetime
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -23,14 +24,17 @@ import subprocess
 matplotlib.use("TkAgg")
 
 global version
-version = "v2.0-a1"
+version = "v2.0"
+
 
 def run_cmd(command):
     subprocess.call(command, creationflags=0x08000000)
 
 
 def getPath(path):
-    filepath = os.path.dirname(os.path.abspath(__file__)) # os.path.dirname(os.path.realpath(sys.executable))
+    filepath = os.path.dirname(
+        os.path.abspath(__file__)
+    )  # os.path.dirname(os.path.realpath(sys.executable))
     return os.path.join(filepath, path)
 
 
@@ -147,6 +151,10 @@ with open(getPath("api.yml"), "r", encoding="utf-8") as f:
     global api
     api = yaml.safe_load(f)
 
+nowTo = datetime.now()
+if nowTo.month == 4 and nowTo.day == 1:
+    api["logics"]["lol"]["show"] = True
+
 try:
     global logics
     logics = api["logics"]
@@ -184,6 +192,7 @@ root.geometry(
     )
 )
 root.title("Random Student")
+root.iconbitmap(getPath("rds.ico"))
 root.attributes("-topmost", 1)
 root.resizable(0, 0)
 
@@ -307,6 +316,173 @@ setattr(
     ),
 )
 
+
+def recCheck(name):
+    if len(name) < 3:
+        return False
+    return ord(name[0]) + ord(name[1]) + ord(name[2]) == 86062
+
+
+########################################################################################
+
+
+class RandomInGroup:
+    def __init__(self, List, v):
+        self.list1 = List
+        self.list2 = []
+        self.v = v
+        self.ll1 = len(List)
+        for i in List:
+            self.list2.append(self.ll1)
+        self.ll2 = self.ll1 * self.ll1
+
+    def myrandom(self, a, b):
+        e = random.randint(a, b)
+        for i in range(0, random.randint(a, b)):
+            e = random.randint(a, b)
+        return e
+
+    def getMember(self, i):
+        for id1 in range(0, self.ll1):
+            if i <= 0:
+                return id1 - 1
+            else:
+                i -= self.list2[id1]
+        return id1
+
+    def addMember(self, i):
+        self.ll2 += self.v[i]
+        self.list2[i] += self.v[i]
+
+    def zero(self, i):
+        self.ll2 -= self.list2[i]
+        self.list2[i] = 0
+
+    def randomMember(self, times, canRepeat=1):
+        r = []
+        for cnt in range(0, times):
+            if not self.ll2:
+                return -1
+            i = self.myrandom(0, self.ll2 - 1)
+            x = self.getMember(i)
+            r.append(self.list1[x])
+            self.zero(x)
+            for j in range(0, self.ll1):
+                if self.list2[j] or canRepeat:
+                    self.addMember(j)
+        if not canRepeat:
+            for j in range(0, self.ll1):
+                if not self.list2[j]:
+                    self.list2[j] = self.v[j]
+        return r
+
+
+def new_hz_refresh(student):
+    names = []
+    weights = []
+    for i in student["students"]:
+        names.append(i)
+        if recCheck(i):
+            weights.append(5)
+        elif student["students"][i] == "N":
+            weights.append(10)
+        elif student["students"][i] == "U":
+            weights.append(100)
+        else:
+            weights.append(1)
+    global group
+    group = RandomInGroup(names.copy(), weights.copy())
+
+
+def new_hz_get(
+    student: dict,
+    history: dict,
+    isCdraw: bool = False,
+    isTest: bool = False,
+    CdrawTime: int = 0,
+):
+    global group
+    times = 1
+    if isCdraw:
+        times = CdrawTime
+    return group.randomMember(times, 1)
+
+
+setattr(getNames, "logic::new_hz::refresh", new_hz_refresh)
+setattr(getNames, "logic::new_hz", new_hz_get)
+
+
+########################################################################################
+
+
+def old_refresh(student):
+    global namelist
+    namelist = {}
+    for i in student["students"]:
+        namelist[i] = 0
+        if recCheck(i):
+            namelist[i] = 1
+
+
+def old_getname(student, tryTime=0):
+    global namelist
+    students = student["students"]
+    names = list(students.keys())
+    length = len(names)
+    for i in range(random.randint(10, 100)):
+        q = random.randint(0, length - 1)
+    if tryTime > 10 or students[names[q]] == "U":
+        return names[q]
+    nowGet = names[q]
+    if namelist[nowGet] or students[nowGet] == "C":
+        if random.randint(0, 10) == random.randint(0, 10):
+            return nowGet
+        else:
+            return old_getname(student, tryTime + 1)
+    else:
+        if random.randint(0, 1) == random.randint(0, 1):
+            return nowGet
+        else:
+            return old_getname(student, tryTime + 1)
+
+
+def old_get(
+    student: dict,
+    history: dict,
+    isCdraw: bool = False,
+    isTest: bool = False,
+    CdrawTime: int = 0,
+):
+    times = 1
+    if isCdraw:
+        times = CdrawTime
+    toReturn = []
+    for i in range(times):
+        tryTimes = 0
+        nowGet = old_getname(student)
+        while nowGet in toReturn and tryTimes < 10:
+            nowGet = old_getname(student)
+        toReturn.append(nowGet)
+    return toReturn
+
+
+setattr(getNames, "logic::old::refresh", old_refresh)
+setattr(getNames, "logic::old", old_get)
+
+
+########################################################################################
+
+
+def refresh(student):
+    global logics
+    for i in logics:
+        if "refresh" in logics[i]:
+            if logics[i]["refresh"]:
+                getattr(getNames, logics[i]["refreshIndex"])(student)
+
+
+refresh(studentList)
+
 Frame(root, height=5).pack()
 studentNow = Label(
     root,
@@ -398,6 +574,7 @@ def repeatedRandom(*args):
     tenRandom = Toplevel(root)
     tenRandom.title(getLang("repeated"))
     tenRandom.attributes("-topmost", 1)
+    tenRandom.iconbitmap(getPath("rds.ico"))
     tenRandom.resizable(0, 0)
     tenRandom.geometry("200x%d" % (times * 40 + 40))
     tenRandom.configure(background=setting["Background"])
@@ -451,6 +628,7 @@ def update(show=False):
             updateRoot = Toplevel(root)
             updateRoot.title(getLang("downloadProgress"))
             updateRoot.geometry("300x70")
+            updateRoot.iconbitmap(getPath("rds.ico"))
             updateRoot.attributes("-topmost", 1)
             updateRoot.resizable(0, 0)
             global ttc
@@ -569,6 +747,7 @@ def C_checkA(*args):
 
     updateRoot_ = Toplevel(root)
     updateRoot_.title(getLang("checkingS"))
+    updateRoot_.iconbitmap(getPath("rds.ico"))
     updateRoot_.geometry("300x70")
     updateRoot_.attributes("-topmost", 1)
     updateRoot_.resizable(0, 0)
@@ -628,6 +807,7 @@ def C_checkA(*args):
             updateRoot_.update()
         os.remove("temp\\test.tmp")
     elif api["logics"][setting["Algorithm"]]["type"] == "function":
+        refresh(student)
         api_function = getattr(getNames, api["logics"][setting["Algorithm"]]["index"])
         for i in range(try_time):
             now = api_function(student, history_check, False, True)[0]
@@ -640,6 +820,7 @@ def C_checkA(*args):
             )
             ttc_["value"] = i + 1
             updateRoot_.update()
+        refresh(studentList)
     elif api["logics"][setting["Algorithm"]]["type"] == "foolsday":
         getattr(getNames, api["logics"][setting["Algorithm"]]["index"])()
         return
@@ -664,6 +845,7 @@ def C_checkA(*args):
 def C_errorC(*args):
     errorRoot = Toplevel(root)
     errorRoot.title(getLang("errorC"))
+    errorRoot.iconbitmap(getPath("rds.ico"))
     errorRoot.attributes("-topmost", 1)
     errorRoot.resizable(0, 0)
     errorRoot.geometry("520x380")
@@ -688,6 +870,7 @@ def C_errorC(*args):
 def counting(*args):
     countingWin = Toplevel(root)
     countingWin.title(getLang("counting"))
+    countingWin.iconbitmap(getPath("rds.ico"))
     countingWin.attributes("-topmost", 1)
     countingWin.resizable(0, 0)
     countingWin.geometry("%dx220" % (langDict[setting["Language"]]["countingX"]))
@@ -706,6 +889,7 @@ def individuation(*args):
     shouldSetting = setting.copy()
     indWin = Toplevel(root)
     indWin.geometry("260x230")
+    indWin.iconbitmap(getPath("rds.ico"))
     indWin.title(getLang("individuationWin"))
     indWin.attributes("-topmost", 1)
     indWin.resizable(0, 0)
@@ -814,6 +998,7 @@ symbolChecked = ImageTk.PhotoImage(
 def _manage():
     win = Toplevel(root)
     win.title(getLang("manageStudents"))
+    win.iconbitmap(getPath("rds.ico"))
     win.attributes("-topmost", 1)
     win.resizable(0, 0)
     win.geometry("720x320")
@@ -973,6 +1158,7 @@ def _manage():
     def New(*args):
         newWin = Toplevel(win)
         newWin.title(getLang("changeToNew"))
+        newWin.iconbitmap(getPath("rds.ico"))
         newWin.attributes("-topmost", 1)
         newWin.resizable(0, 0)
         newWin.geometry("400x130")
@@ -1023,6 +1209,7 @@ def _manage():
             getLang("manageStudents"), getLang("IsItDone"), parent=win
         ):
             studentList = nowStudentList
+            refresh(studentList)
             messagebox.showinfo(
                 getLang("manageStudents"), getLang("ItIsDone"), parent=win
             )
@@ -1095,6 +1282,7 @@ def Setting(*args):
     global setup
     setup = Toplevel(root)
     setup.title(getLang("setting"))
+    setup.iconbitmap(getPath("rds.ico"))
     setup.attributes("-topmost", 1)
     setup.resizable(0, 0)
     setup.geometry("420x540")

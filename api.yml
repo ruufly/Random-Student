@@ -16,6 +16,9 @@
 # - function 以函数形式嵌入到代码中的内置逻辑
 # - file 以可执行文件形式储存于 .\plugin\ 的随机逻辑
 # - foolsday 你猜^^
+# show 项决定该逻辑是否能在用户界面上显示以供选择
+# refresh 项决定每次用户修改学生名单时是否需要重新加载（仅对 function 类型适用）
+# refreshIndex 项标记加载学生名单的方法
 logics:
   old:
     description:
@@ -23,35 +26,41 @@ logics:
       en: "Old logic by ruufly! & distjr_"
     type: "function"
     index: "logic::old"
-    show: false
+    show: true
+    refresh: true
+    refreshIndex: "logic::old::refresh"
   new_hz:
     description:
-      zh-CN: "新版逻辑 by hz"
+      zh-CN: "新版逻辑 by hz(暂时不推荐使用)"
       en: "New logic by hz"
     type: "function"
     index: "logic::new_hz"
-    show: false
+    show: true
+    refresh: true
+    refreshIndex: "logic::new_hz::refresh"
   tr:
     description:
       zh-CN: "插件测试用逻辑 by distjr_"
       en: "Logic to test the plug-ins"
     type: "file"
     file: "plugin\\trueRandom.exe"
-    show: true
+    show: false
   etr:
     description:
-      zh-CN: "高通量检验测试用逻辑Ⅰ by distjr_"
+      zh-CN: "高通量检验测试用逻辑 by distjr_"
       en: "Logic A to test the high throughput inspection"
     type: "function"
     index: "logic::test::etr"
-    show: true
+    show: false
+    refresh: false
   ctr:
     description:
-      zh-CN: "高通量检验测试用逻辑Ⅱ by distjr_"
+      zh-CN: "高通量检验测试用逻辑(with CNU) by distjr_"
       en: "Logic B to test the high throughput inspection"
     type: "function"
     index: "logic::test::tr_with_CNU"
     show: true
+    refresh: false
   lol:
     description:
       zh-CN: "愚人节快乐！"
