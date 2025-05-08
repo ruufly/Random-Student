@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox, filedialog, simpledialog, colorchooser, ttk
 from PIL import Image, ImageTk
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
@@ -16,10 +17,16 @@ import winsound
 import shutil
 import configparser
 import threading
+import subprocess
 
+
+matplotlib.use("TkAgg")
 
 global version
 version = "v2.0-a1"
+
+def run_cmd(command):
+    subprocess.call(command, creationflags=0x08000000)
 
 
 def getPath(path):
@@ -341,7 +348,7 @@ def randomName(*args):
         os.chdir(getPath(""))
         with open("temp\\student.tmp", "wb") as f:
             pickle.dump(studentList, f)
-        os.system(getPath(api["logics"][setting["Algorithm"]]["file"]))
+        run_cmd(getPath(api["logics"][setting["Algorithm"]]["file"]))
         os.chdir(shouldAt)
         with open(getPath("temp\\now.tmp"), "rb") as f:
             now = pickle.load(f)[0]
@@ -376,7 +383,7 @@ def repeatedRandom(*args):
         os.chdir(getPath(""))
         with open("temp\\student.tmp", "wb") as f:
             pickle.dump(studentList, f)
-        os.system(getPath(api["logics"][setting["Algorithm"]]["file"]))
+        run_cmd(getPath(api["logics"][setting["Algorithm"]]["file"]))
         os.chdir(shouldAt)
         with open(getPath("temp\\now.tmp"), "rb") as f:
             now = pickle.load(f)
@@ -486,7 +493,7 @@ def update(show=False):
             messagebox.showinfo(
                 getLang("rdsMessage"), getLang("startInstall"), parent=setup
             )
-            threading.Thread(target=os.system, args=("update.exe",)).start()
+            threading.Thread(target=run_cmd, args=("update.exe",)).start()
 
 
 def showData(all_data):
@@ -605,7 +612,7 @@ def C_checkA(*args):
         with open("temp\\history.tmp", "wb") as f:
             pickle.dump(tuple(), f)
         for i in range(try_time):
-            os.system("..\\%s" % api["logics"][setting["Algorithm"]]["file"])
+            run_cmd("..\\%s" % api["logics"][setting["Algorithm"]]["file"])
             with open("temp\\now.tmp", "rb") as f:
                 now = pickle.load(f)[0]
             if now in countingS:
@@ -1125,10 +1132,10 @@ def Setting(*args):
     Label(setup, text=getLang("openSource")).place(x=5, y=260)
 
     def github(*args):
-        os.system("start https://github.com/ruufly/Random-Student")
+        run_cmd("start https://github.com/ruufly/Random-Student")
 
     def gitee(*args):
-        os.system("start https://gitee.com/distjr/random-student")
+        run_cmd("start https://gitee.com/distjr/random-student")
 
     global tp_github
     tp_github = PhotoImage(file=getPath("img\\github.gif"))
@@ -1143,7 +1150,7 @@ def Setting(*args):
     Label(setup, text=getLang("about")).place(x=5, y=300)
 
     def blog(*args):
-        os.system("start https://ruufly.github.io/")
+        run_cmd("start https://ruufly.github.io/")
 
     global tp_blog
     tp_blog = PhotoImage(file=getPath("img\\favicon.gif"))
@@ -1152,7 +1159,7 @@ def Setting(*args):
     l_blog.bind("<Button-1>", blog)
 
     def bilibili(*args):
-        os.system("start https://space.bilibili.com/1159124697")
+        run_cmd("start https://space.bilibili.com/1159124697")
 
     global tp_bilibili
     tp_bilibili = PhotoImage(file=getPath("img\\bilibili.gif"))
