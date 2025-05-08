@@ -4,8 +4,8 @@ from PIL import Image, ImageTk
 import matplotlib.pyplot as plt
 import numpy as np
 import pickle
-from sys import argv
-import os
+from sys import argv, exit
+import os, sys
 import random
 from urllib import request
 import json
@@ -23,7 +23,8 @@ version = "v2.0-a1"
 
 
 def getPath(path):
-    return os.path.join(os.path.dirname(__file__), path)
+    filepath = os.path.dirname(os.path.abspath(__file__)) # os.path.dirname(os.path.realpath(sys.executable))
+    return os.path.join(filepath, path)
 
 
 def raiseError(title, information):
