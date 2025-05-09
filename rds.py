@@ -19,6 +19,7 @@ import shutil
 import configparser
 import threading
 import subprocess
+import copy
 
 
 matplotlib.use("TkAgg")
@@ -391,7 +392,7 @@ def new_hz_refresh(student):
         else:
             weights.append(1)
     global group
-    group = RandomInGroup(names.copy(), weights.copy())
+    group = RandomInGroup(copy.deepcopy(names), copy.deepcopy(weights))
 
 
 def new_hz_get(
@@ -886,7 +887,7 @@ def counting(*args):
 
 
 def individuation(*args):
-    shouldSetting = setting.copy()
+    shouldSetting = copy.deepcopy(setting)
     indWin = Toplevel(root)
     indWin.geometry("260x230")
     indWin.iconbitmap(getPath("rds.ico"))
@@ -1036,7 +1037,7 @@ def _manage():
     global retypeDict
     retypeDict = {"Normal": "N", "Censored": "C", "Uped": "U"}
     global nowStudentList
-    nowStudentList = studentList.copy()
+    nowStudentList = copy.deepcopy(studentList)
 
     def init():
         for i in nowStudentList["students"]:
