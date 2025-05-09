@@ -92,7 +92,7 @@ if rewrite:
             "Background": "#F8FAED",
             "Foreground": "#525059",
             "NameForeground": {"N": "#525059", "C": "#FBA346", "U": "#92B42A"},
-            "DownloadFrom": "github",
+            "DownloadFrom": "gitee",
             "Language": "zh-SI",
         }
     )
