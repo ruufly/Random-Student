@@ -725,7 +725,7 @@ def C_checkU(*args):
 def C_checkA(*args):
     shouldAt = os.getcwd()
     config = configparser.ConfigParser()
-    config.read("C_checkA.ini")
+    config.read("C_checkA.ini", encoding="utf-8")
     student = {"version": version, "students": {}}
     now_type = api["logics"][setting["Algorithm"]]["type"]
     try_time = int(config["checkA_%s" % (now_type)]["try_time"])
