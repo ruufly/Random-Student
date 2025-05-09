@@ -10,5 +10,11 @@
         "shouldX": 100,
         "rootSize": 200,
         "countingX": 420
+    },
+    "zh-TR": {
+        "show": "中文（繁體）",
+        "shouldX": 100,
+        "rootSize": 200,
+        "countingX": 420
     }
 }

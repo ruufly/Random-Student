@@ -23,6 +23,7 @@ logics:
   old:
     description:
       zh-CN: "旧版逻辑 by ruufly! & distjr_"
+      zh-TR: "舊版邏輯 by ruufly! & distjr_"
       en: "Old logic by ruufly! & distjr_"
     type: "function"
     index: "logic::old"
@@ -32,6 +33,7 @@ logics:
   new_hz:
     description:
       zh-CN: "新版逻辑 by hz(暂时不推荐使用)"
+      zh-TR: "新版邏輯 by hz(暫時不推薦使用)"
       en: "New logic by hz"
     type: "function"
     index: "logic::new_hz"
@@ -41,6 +43,7 @@ logics:
   tr:
     description:
       zh-CN: "插件测试用逻辑 by distjr_"
+      zh-TR: "挿件測試用邏輯 by distjr_"
       en: "Logic to test the plug-ins"
     type: "file"
     file: "plugin\\trueRandom.exe"
@@ -48,6 +51,7 @@ logics:
   etr:
     description:
       zh-CN: "高通量检验测试用逻辑 by distjr_"
+      zh-TR: "高通量檢驗測試用邏輯 by distjr_"
       en: "Logic A to test the high throughput inspection"
     type: "function"
     index: "logic::test::etr"
@@ -56,6 +60,7 @@ logics:
   ctr:
     description:
       zh-CN: "高通量检验测试用逻辑(with CNU) by distjr_"
+      zh-TR: "高通量檢驗測試用邏輯(with CNU) by distjr_"
       en: "Logic B to test the high throughput inspection"
     type: "function"
     index: "logic::test::tr_with_CNU"
@@ -64,6 +69,7 @@ logics:
   lol:
     description:
       zh-CN: "愚人节快乐！"
+      zh-TR: "愚人節快樂！"
       en: "Happy April Fools' Day!"
     type: "foolsday"
     index: "lol"

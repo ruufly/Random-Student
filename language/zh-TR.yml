@@ -1,0 +1,95 @@
+rdsMessage: 隨機學生
+about: 關於
+rds: 隨機學生
+repeated: 連抽
+setting: 設定
+
+resetPwd: 無法識別密碼檔案，已將密碼重置為123456
+
+oldVersionList: 我們注意到您使用了舊版的學生名單檔案格式，已為您自動轉換為新版格式！
+
+noNewVersion: 沒有發現新版本
+newVersion: "發現版本：%s\n是否需要安裝？"
+downloadProgress: 下載進度
+progress: "%.3f/%.3f(MB)，進度：%.2f%%"
+startInstall: 安裝包下載完成，現在開始安裝
+
+manageStudents: 管理學生名單
+manageStudentsButton: 學生名單
+count: 點名次數統計
+countButton: 統計
+CDraw: 設定連抽次數
+logic: 隨機邏輯
+update: 版本更新
+updateCheck: 檢測新版本
+license: 軟件許可證
+licenseButton: 許可證
+openSource: 開放原始程式碼
+about: 關於作者
+individuation: 個性化設定
+individuationButton: 個性化
+languageSet: 語言設定
+downloadFrom: 更新包下載源
+passwordChange: 修改密碼
+passwordChangeButton: 修改
+okay: 確定
+setDone: 設定成功，語言設定請重啓軟件以應用
+
+counting: 統計
+timeC: 抽取統計
+timeCD: 統計所有學生被抽取的次數
+checkU:  CNU檢驗
+checkUD: 檢驗Censored與Uped學生的抽取機會
+checkA: 高通量檢驗
+checkAD: 通過大量抽取試驗以判斷隨機邏輯的優劣性
+errorC: 報錯統計
+errorCD: 統計軟體報錯次數
+
+checkingS: 正在檢驗數據中
+
+individuationWin: 個性化
+Foreground: 一般前景
+NameForeground_N: Normal前景
+NameForeground_C: Censored前景
+NameForeground_U: Uped前景
+setIt: 設定
+bgSetIt: 設定背景顏色
+choseColor: 選擇顏色
+indDone: 設定成功，重啓軟件以應用
+
+studentName: 學生姓名
+studentType: 學生分類
+changeToN: 修改為Normal
+changeToC: 修改為Censored
+changeToU: 修改為Uped
+changeToDelete: 删除
+changeToImport: 導入
+changeName: 修改學生姓名
+changeToNew: 新建
+allSelect: 全選
+allNotSelect: 全不選
+invert: 反選
+manage_export: 匯出
+manage_okay: 確定
+deleteStudent: 删除學生
+deleteStudent_text: 您真的要删除這些學生嗎？
+shouldSelectOne: 一次只能修改一個學生的姓名
+enterName: 請輸入學生姓名
+haveExist: 該姓名已被使用
+changeIt: 導入檔案中的數據會覆蓋原名單中具有相同姓名的學生的數據，是否仍要導入？
+
+enterPwd: 請輸入密碼
+
+nameIs: 學生姓名
+typeIs: 學生分類
+typesShouldType: 請選擇一個分類
+changeToNewDone: 新建成功
+
+IsItDone: 是否確認本次修改
+ItIsDone: 修改成功
+
+enterOldPwd: 輸入舊密碼
+enterNewPwd: 輸入新密碼
+passwordChangeSuc: 修改成功
+
+pwdNotSuc: 密碼錯誤
