@@ -93,3 +93,8 @@ enterNewPwd: 輸入新密碼
 passwordChangeSuc: 修改成功
 
 pwdNotSuc: 密碼錯誤
+
+resetAll: 重置配寘
+resetButton: 重置
+isReset: 您真的要重置配寘嗎？ 這將使得您的所有用戶資料丟失！
+resetDone: 重置成功，軟件即將關閉，請再次打開軟件以應用重置。

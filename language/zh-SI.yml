@@ -93,3 +93,8 @@ enterNewPwd: 输入新密码
 passwordChangeSuc: 修改成功
 
 pwdNotSuc: 密码错误
+
+resetAll: 重置配置
+resetButton: 重置
+isReset: 您真的要重置配置吗？这将使得您的所有用户数据丢失！
+resetDone: 重置成功，软件即将关闭，请再次打开软件以应用重置。

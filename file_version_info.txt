@@ -1,7 +1,7 @@
 # UTF-8
 VSVersionInfo(
     ffi=FixedFileInfo(
-        filevers=(2, 0, 1, 0),
+        filevers=(2, 0, 2, 0),
         prodvers=(4, 5, 9, 4),
         mask=0x3f,
         flags=0x0,
@@ -18,12 +18,12 @@ VSVersionInfo(
                     [
                         StringStruct(u'CompanyName', u'distjr_'),
                         StringStruct(u'FileDescription', u'Random Student'),
-                        StringStruct(u'FileVersion', u'v2.0.1'),
+                        StringStruct(u'FileVersion', u'v2.0.2'),
                         StringStruct(u'InternalName', u'SVN'),
                         StringStruct(u'LegalCopyright', u'Copyright 2023-2025 distjr_, ruufly!, dyt_dirt, hz, et al.'),
                         StringStruct(u'OriginalFilename', u'rds.exe'),
                         StringStruct(u'ProductName', u'Random Student'),
-                        StringStruct(u'ProductVersion', u'v2.0.1')
+                        StringStruct(u'ProductVersion', u'v2.0.2')
                     ]
                 )
             ]

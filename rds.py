@@ -25,7 +25,7 @@ import copy
 matplotlib.use("TkAgg")
 
 global version
-version = "v2.0.1"
+version = "v2.0.2"
 
 
 def run_cmd(command):
@@ -144,13 +144,88 @@ for i in langDict:
     langSDict[langDict[i]["show"]] = i
 
 
+global api
+api = {
+    "logics": {
+        "old": {
+            "description": {
+                "zh-SI": "旧版逻辑 by ruufly! & distjr_",
+                "zh-TR": "舊版邏輯 by ruufly! & distjr_",
+                "en": "Old logic by ruufly! & distjr_",
+            },
+            "type": "function",
+            "index": "logic::old",
+            "show": True,
+            "refresh": True,
+            "refreshIndex": "logic::old::refresh",
+        },
+        "new_hz": {
+            "description": {
+                "zh-SI": "新版逻辑 by hz(暂时不推荐使用)",
+                "zh-TR": "新版邏輯 by hz(暫時不推薦使用)",
+                "en": "New logic by hz",
+            },
+            "type": "function",
+            "index": "logic::new_hz",
+            "show": True,
+            "refresh": True,
+            "refreshIndex": "logic::new_hz::refresh",
+        },
+        "tr": {
+            "description": {
+                "zh-SI": "插件测试用逻辑 by distjr_",
+                "zh-TR": "挿件測試用邏輯 by distjr_",
+                "en": "Logic to test the plug-ins",
+            },
+            "type": "file",
+            "file": "plugin\\trueRandom.exe",
+            "show": True,
+        },
+        "etr": {
+            "description": {
+                "zh-SI": "高通量检验测试用逻辑 by distjr_",
+                "zh-TR": "高通量檢驗測試用邏輯 by distjr_",
+                "en": "Logic A to test the high throughput inspection",
+            },
+            "type": "function",
+            "index": "logic::test::etr",
+            "show": False,
+            "refresh": False,
+        },
+        "ctr": {
+            "description": {
+                "zh-SI": "高通量检验测试用逻辑(with CNU) by distjr_",
+                "zh-TR": "高通量檢驗測試用邏輯(with CNU) by distjr_",
+                "en": "Logic B to test the high throughput inspection",
+            },
+            "type": "function",
+            "index": "logic::test::tr_with_CNU",
+            "show": False,
+            "refresh": False,
+        },
+        "lol": {
+            "description": {
+                "zh-SI": "愚人节快乐！",
+                "zh-TR": "愚人節快樂！",
+                "en": "Happy April Fools' Day!",
+            },
+            "type": "foolsday",
+            "index": "lol",
+            "show": False,
+        },
+    }
+}
+
 if not os.path.exists(getPath("api.yml")):
-    raiseError("Error", "Cannot load the API file!")
-    exit(1)
+    with open(getPath("api.yml"), "w", encoding="utf-8") as f:
+        yaml.dump(api, f)
+    # raiseError("Error", "Cannot load the API file!")
+    # exit(1)
 
 with open(getPath("api.yml"), "r", encoding="utf-8") as f:
-    global api
     api = yaml.safe_load(f)
+
+# print(api)
 
 nowTo = datetime.now()
 if nowTo.month == 4 and nowTo.day == 1:
@@ -523,7 +598,8 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-""" % (version),
+"""
+        % (version),
         parent=setup,
     )
 
@@ -744,8 +820,24 @@ def C_checkU(*args):
 
 def C_checkA(*args):
     shouldAt = os.getcwd()
+    if not os.path.exists(getPath("C_checkA.ini")):
+        _config = configparser.ConfigParser()
+        _config["checkA_file"] = {
+            "try_time": 150,
+            "C_size": 5,
+            "N_size": 5,
+            "U_size": 5,
+        }
+        _config["checkA_function"] = {
+            "try_time": 18000,
+            "C_size": 200,
+            "N_size": 200,
+            "U_size": 200,
+        }
+        with open(getPath("C_checkA.ini"), "w") as f:
+            _config.write(f)
     config = configparser.ConfigParser()
-    config.read("C_checkA.ini", encoding="utf-8")
+    config.read(getPath("C_checkA.ini"), encoding="utf-8")
     student = {"version": version, "students": {}}
     now_type = api["logics"][setting["Algorithm"]]["type"]
     try_time = int(config["checkA_%s" % (now_type)]["try_time"])
@@ -1299,13 +1391,14 @@ def changePwd(*args):
 
 def Setting(*args):
     global setting
+    global pwd
     global setup
     setup = Toplevel(root)
     setup.title(getLang("setting"))
     setup.iconbitmap(getPath("rds.ico"))
     setup.attributes("-topmost", 1)
     setup.resizable(0, 0)
-    setup.geometry("420x540")
+    setup.geometry("420x580")
     shouldX = langDict[setting["Language"]]["shouldX"]
     Label(setup, text=getLang("manageStudents")).place(x=5, y=20)
     ttk.Button(setup, text=getLang("manageStudentsButton"), command=manage).place(
@@ -1400,6 +1493,34 @@ def Setting(*args):
         x=shouldX, y=455
     )
 
+    def reset(*args):
+        global pwd
+        if messagebox.askyesno(getLang("resetAll"), getLang("isReset"), parent=setup):
+            getPwd = simpledialog.askstring(
+                title=getLang("resetAll"), prompt=getLang("enterPwd"), parent=setup
+            )
+            if getPwd == pwd:
+                os.remove(getPath("api.yml"))
+                os.remove(getPath("password.pkl"))
+                os.remove(getPath("setting.json"))
+                os.remove(getPath("student.pkl"))
+                os.remove(getPath("C_checkA.ini"))
+                messagebox.showinfo(
+                    getLang("resetAll"), getLang("resetDone"), parent=setup
+                )
+                exit(0)
+            elif getPwd == None:
+                return
+            else:
+                messagebox.showinfo(
+                    getLang("resetAll"), getLang("pwdNotSuc"), parent=setup
+                )
+
+    Label(setup, text=getLang("resetAll")).place(x=5, y=500)
+    ttk.Button(setup, text=getLang("resetButton"), command=reset).place(
+        x=shouldX, y=495
+    )
+
     def okay(*args):
         repeatTime = int(sp.get())
         newLogic = logicDDict[logicBox.get()]
@@ -1414,7 +1535,7 @@ def Setting(*args):
         messagebox.showinfo(getLang("setting"), getLang("setDone"), parent=setup)
         setup.destroy()
 
-    ttk.Button(setup, text=getLang("okay"), command=okay).place(x=310, y=490)
+    ttk.Button(setup, text=getLang("okay"), command=okay).place(x=310, y=530)
 
 
 Frame(root, height=10).pack()
