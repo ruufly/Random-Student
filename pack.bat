@@ -1,0 +1,1 @@
+pyinstaller -w rds.py -i rds.ico --version-file file_version_info.txt

@@ -25,7 +25,7 @@ import copy
 matplotlib.use("TkAgg")
 
 global version
-version = "v2.0"
+version = "v2.0.1"
 
 
 def run_cmd(command):
@@ -505,9 +505,10 @@ studentNow.pack()
 
 
 def about(*args):
+    global version
     messagebox.showinfo(
         getLang("license"),
-        """Random Student v2.0
+        """Random Student %s
 
 Copyright 2023-2025 distjr_, ruufly!, hz, dyt_dirt, et al.
 
@@ -522,7 +523,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-""",
+""" % (version),
         parent=setup,
     )
 
