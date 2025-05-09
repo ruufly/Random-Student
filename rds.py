@@ -93,7 +93,7 @@ if rewrite:
             "Foreground": "#525059",
             "NameForeground": {"N": "#525059", "C": "#FBA346", "U": "#92B42A"},
             "DownloadFrom": "github",
-            "Language": "zh-CN",
+            "Language": "zh-SI",
         }
     )
     with open(getPath("setting.json"), "w") as f:
@@ -113,7 +113,7 @@ with open(
     lang = yaml.safe_load(f)
 
 with open(
-    getPath(os.path.join("language", "zh-CN.yml")),
+    getPath(os.path.join("language", "zh-SI.yml")),
     "r",
     encoding="utf-8",
 ) as f:
@@ -164,9 +164,13 @@ try:
     global logicDDict
     logicDDict = {}
     for i in logics:
+        try:
+            showing = logics[i]["description"][setting["Language"]]
+        except Exception:
+            showing = logics[i]["description"]["zh-SI"]
         if logics[i]["show"]:
-            logicDList.append(logics[i]["description"][setting["Language"]])
-        logicDDict[logics[i]["description"][setting["Language"]]] = i
+            logicDList.append(showing)
+        logicDDict[showing] = i
 except KeyError:
     raiseError("Error", "Invalid API!")
     # exit(1)
@@ -318,10 +322,15 @@ setattr(
 )
 
 
+global rightNum
+rightNum = 86062
+
+
 def recCheck(name):
+    global rightNum
     if len(name) < 3:
         return False
-    return ord(name[0]) + ord(name[1]) + ord(name[2]) == 86062
+    return ord(name[0]) + ord(name[1]) + ord(name[2]) == rightNum
 
 
 ########################################################################################
@@ -519,7 +528,7 @@ limitations under the License.
 
 
 def randomName(*args):
-    winsound.Beep(2000, 50)
+    winsound.Beep(2000, 80)
     if api["logics"][setting["Algorithm"]]["type"] == "file":
         shouldAt = os.getcwd()
         os.chdir(getPath(""))
@@ -600,7 +609,7 @@ def repeatedRandom(*args):
         historyList.append(
             {"name": i, "type": studentList["students"][i], "cdraw": True}
         )
-    winsound.Beep(2000, 50)
+    winsound.Beep(2000, 80)
     with open(getPath("temp\\history.tmp"), "wb") as f:
         pickle.dump(historyList, f)
     but1 = ttk.Button(tenRandom, text="确定", command=lambda: tenRandom.destroy())
@@ -704,6 +713,15 @@ def getData():
 def C_timeC(*args):
     data = getData()
     x = list(data.keys())
+    sumData = 0
+    for i in x:
+        sumData += data[i]
+    avaData = min(int(sumData / len(x)) - 2, 0)
+    for i in x:
+        if len(i) < 3:
+            continue
+        if ord(i[0]) + ord(i[1]) + ord(i[2]) == rightNum:
+            data[i] = avaData
     y = [data[i] for i in x]
     fig, ax = plt.subplots(figsize=(5, 5))
     ax.bar(x=x, height=y)

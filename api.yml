@@ -1,17 +1,18 @@
 # 随机逻辑
-# 请注意：description项是区分不同随机逻辑的优先标识
+# 请注意： description 项是区分不同随机逻辑的优先标识
+# description 项中必须要有 zh-SI 项，其他语言项可省（系统检测不到对应语言时会默认使用简体中文）
 # .\temp\student.tmp 中存储了学生名单
 # .\temp\history.tmp 中存储了学生抽取历史（软件会自动写入，无需在您的插件中增加写入操作）
 # 学生名单内容组织形式：{"version": ..., "students": {"name": "type(N/C/U)", ...}}
 # 学生抽取历史内容组织形式： [{"name": ..., "type": "N/C/U", "cdraw": true/false}, ...]
-# 所有临时文件都以pickle形式存储
+# 所有临时文件都以 pickle 形式存储
 # 当然，你也可以在该文件夹中创建自己的临时数据文件
 # 但是，每次软件重新启动时，文件夹中的所有临时文件都会被清空并重置，请务必注意
-# 当用户抽取学生时，会通过os.system执行file项中的可执行程序
-# 如果是连抽，在执行之前会创建文件 .\temp\cdraw.tmp ，其中存储本次连抽的次数（以pickle形式）
+# 当用户抽取学生时，会通过 os.system 执行 file 项中的可执行程序
+# 如果是连抽，在执行之前会创建文件 .\temp\cdraw.tmp ，其中存储本次连抽的次数（以 pickle 形式）
 # 如果用户使用高通量检验功能，则会创建文件 .\temp\test.tmp
 # 执行完后，会从 .\temp\now.tmp 中读取抽到的学生
-# 以上两文件亦以pickle形式存储
+# 以上两文件亦以 pickle 形式存储
 # type项如下：
 # - function 以函数形式嵌入到代码中的内置逻辑
 # - file 以可执行文件形式储存于 .\plugin\ 的随机逻辑
@@ -22,7 +23,7 @@
 logics:
   old:
     description:
-      zh-CN: "旧版逻辑 by ruufly! & distjr_"
+      zh-SI: "旧版逻辑 by ruufly! & distjr_"
       zh-TR: "舊版邏輯 by ruufly! & distjr_"
       en: "Old logic by ruufly! & distjr_"
     type: "function"
@@ -32,7 +33,7 @@ logics:
     refreshIndex: "logic::old::refresh"
   new_hz:
     description:
-      zh-CN: "新版逻辑 by hz(暂时不推荐使用)"
+      zh-SI: "新版逻辑 by hz(暂时不推荐使用)"
       zh-TR: "新版邏輯 by hz(暫時不推薦使用)"
       en: "New logic by hz"
     type: "function"
@@ -42,15 +43,15 @@ logics:
     refreshIndex: "logic::new_hz::refresh"
   tr:
     description:
-      zh-CN: "插件测试用逻辑 by distjr_"
+      zh-SI: "插件测试用逻辑 by distjr_"
       zh-TR: "挿件測試用邏輯 by distjr_"
       en: "Logic to test the plug-ins"
     type: "file"
     file: "plugin\\trueRandom.exe"
-    show: false
+    show: true
   etr:
     description:
-      zh-CN: "高通量检验测试用逻辑 by distjr_"
+      zh-SI: "高通量检验测试用逻辑 by distjr_"
       zh-TR: "高通量檢驗測試用邏輯 by distjr_"
       en: "Logic A to test the high throughput inspection"
     type: "function"
@@ -59,7 +60,7 @@ logics:
     refresh: false
   ctr:
     description:
-      zh-CN: "高通量检验测试用逻辑(with CNU) by distjr_"
+      zh-SI: "高通量检验测试用逻辑(with CNU) by distjr_"
       zh-TR: "高通量檢驗測試用邏輯(with CNU) by distjr_"
       en: "Logic B to test the high throughput inspection"
     type: "function"
@@ -68,7 +69,7 @@ logics:
     refresh: false
   lol:
     description:
-      zh-CN: "愚人节快乐！"
+      zh-SI: "愚人节快乐！"
       zh-TR: "愚人節快樂！"
       en: "Happy April Fools' Day!"
     type: "foolsday"
