@@ -1500,11 +1500,26 @@ def Setting(*args):
                 title=getLang("resetAll"), prompt=getLang("enterPwd"), parent=setup
             )
             if getPwd == pwd:
-                os.remove(getPath("api.yml"))
-                os.remove(getPath("password.pkl"))
-                os.remove(getPath("setting.json"))
-                os.remove(getPath("student.pkl"))
-                os.remove(getPath("C_checkA.ini"))
+                try:
+                    os.remove(getPath("api.yml"))
+                except Exception:
+                    pass
+                try:
+                    os.remove(getPath("password.pkl"))
+                except Exception:
+                    pass
+                try:
+                    os.remove(getPath("setting.json"))
+                except Exception:
+                    pass
+                try:
+                    os.remove(getPath("student.pkl"))
+                except Exception:
+                    pass
+                try:
+                    os.remove(getPath("C_checkA.ini"))
+                except Exception:
+                    pass
                 messagebox.showinfo(
                     getLang("resetAll"), getLang("resetDone"), parent=setup
                 )
