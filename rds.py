@@ -25,7 +25,7 @@ import copy
 matplotlib.use("TkAgg")
 
 global version
-version = "v2.0.2"
+version = "v2.1"
 
 
 def run_cmd(command):
@@ -1391,6 +1391,45 @@ def changePwd(*args):
         )
 
 
+def batch(*args):
+    global studentList
+    global nowStudentList
+    global pwd
+    inputPwd = simpledialog.askstring(
+        title=getLang("manageStudents"), prompt=getLang("enterPwd")
+    )
+    if inputPwd == None:
+        return
+    elif inputPwd == pwd:
+        nowStudentList = copy.deepcopy(studentList)
+        filename = filedialog.askopenfilename(
+            title=getLang("batchImport"),
+            filetypes=[("All types", "*.*")],
+            parent=setup,
+        )
+        with open(filename, "r", encoding="utf-8") as f:
+            data = f.readlines()
+        into_data = {}
+        for name in data:
+            if name[-1] == "\n":
+                name = name[:-1]
+            if not len(name):
+                continue
+            into_data[name] = "N"
+        nowStudentList["students"].update(into_data)
+        studentList = nowStudentList
+        refresh(studentList)
+        with open(getPath("student.pkl"), "wb") as f:
+            pickle.dump(studentList, f)
+        messagebox.showinfo(
+            getLang("manageStudents"), getLang("doneBatch"), parent=setup
+        )
+    else:
+        messagebox.showinfo(
+            getLang("manageStudents"), getLang("pwdNotSuc"), parent=setup
+        )
+
+
 def Setting(*args):
     global setting
     global pwd
@@ -1400,7 +1439,7 @@ def Setting(*args):
     setup.iconbitmap(getPath("rds.ico"))
     setup.attributes("-topmost", 1)
     setup.resizable(0, 0)
-    setup.geometry("420x580")
+    setup.geometry("420x610")
     shouldX = langDict[setting["Language"]]["shouldX"]
     Label(setup, text=getLang("manageStudents")).place(x=5, y=20)
     ttk.Button(setup, text=getLang("manageStudentsButton"), command=manage).place(
@@ -1538,6 +1577,9 @@ def Setting(*args):
         x=shouldX, y=495
     )
 
+    Label(setup, text=getLang("batchImport")).place(x=5, y=540)
+    ttk.Button(setup, text=getLang("runBatch"), command=batch).place(x=shouldX, y=535)
+
     def okay(*args):
         repeatTime = int(sp.get())
         newLogic = logicDDict[logicBox.get()]
@@ -1552,7 +1594,7 @@ def Setting(*args):
         messagebox.showinfo(getLang("setting"), getLang("setDone"), parent=setup)
         setup.destroy()
 
-    ttk.Button(setup, text=getLang("okay"), command=okay).place(x=310, y=530)
+    ttk.Button(setup, text=getLang("okay"), command=okay).place(x=310, y=570)
 
 
 Frame(root, height=10).pack()

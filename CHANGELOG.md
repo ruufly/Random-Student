@@ -96,3 +96,13 @@ Breaking changes
 #### Bug fixed
 
 - 修复了版本更新后原有设置无法继承的 bug
+
+### v2.1 (2025-06-23)
+
+#### New features
+
+- 增加了批量导入学生名单功能
+
+#### Bug fixed
+
+- 修复了修改的学生名单无法保存的 bug

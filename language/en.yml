@@ -98,3 +98,7 @@ resetAll: Reset configuration
 resetButton: Reset
 isReset: Do you really want to reset the configuration? This will result in the loss of all your user data!
 resetDone: Reset successful, the software is about to close. Please reopen the software to apply the reset.
+
+batchImport: Import in Bulk
+runBatch: Import
+doneBatch: Imported successfully
