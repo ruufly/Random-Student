@@ -1322,6 +1322,8 @@ def _manage():
         ):
             studentList = nowStudentList
             refresh(studentList)
+            with open(getPath("student.pkl"), "wb") as f:
+                pickle.dump(studentList, f)
             messagebox.showinfo(
                 getLang("manageStudents"), getLang("ItIsDone"), parent=win
             )
